@@ -3,8 +3,9 @@
 import { useTheme } from '@/context/ThemeContext';
 import { useData } from '@/context/DataContext';
 import { type ProfileData } from '@/lib/profileData';
-import { User, Archive, Trash2 } from 'lucide-react';
+import { User, Archive, Trash2, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 interface ProfileCardProps {
   profile: ProfileData;
@@ -23,8 +24,8 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     deleteProfile(profile.id);
-    toast.error(isPolice ? 'RECORD ARCHIVED' : 'DATA PURGED', {
-      description: `Subject ${profile.id} has been removed from active database.`,
+    toast.error(isPolice ? 'RECORD DELETED' : 'NODE TERMINATED', {
+      description: `Identifier ${profile.id} has been purged from active database.`,
       className: 'font-mono uppercase text-xs',
     });
   };
@@ -33,96 +34,130 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
   // For Police, WANTED might be accent. For Mafia, ONLINE might be accent.
   const isHighAlert = status === 'WANTED' || status === 'BURNED' || status === 'COMPROMISED';
 
+  const shredVariants = {
+    exit: {
+      opacity: 0,
+      transition: { duration: 0.4, staggerChildren: 0.02 }
+    }
+  };
+
+  const stripVariants = {
+    exit: (i: number) => ({
+      y: i % 2 === 0 ? 100 : -100,
+      opacity: 0,
+      transition: { duration: 0.3, ease: "circIn" } as const
+    })
+  };
+
   return (
-    <div
-      className="flex flex-col p-5 group cursor-pointer transition-all duration-200 relative overflow-hidden"
-      style={{
-        backgroundColor: 'var(--bg-surface)',
-        border: '1px solid var(--border-color)',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.borderColor = 'var(--accent-primary)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.borderColor = 'var(--border-color)';
-      }}
+    <motion.div
+      layout
+      variants={shredVariants}
+      exit="exit"
+      className="relative group overflow-hidden"
     >
-      {/* Archive Button Overlay */}
-      <button
-        onClick={handleDelete}
-        className="absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 transition-opacity bg-red-900/20 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/50 z-10"
-        title={isPolice ? "Archive Record" : "Purge Data"}
-      >
-        {isPolice ? <Archive size={14} /> : <Trash2 size={14} />}
-      </button>
-
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex gap-4 items-center">
-          {/* Mugshot Placeholder */}
-          <div
-            className="w-12 h-12 flex items-center justify-center shrink-0"
-            style={{
-              backgroundColor: 'color-mix(in srgb, var(--bg-base) 50%, #000)',
-              border: '1px solid var(--border-color)',
-            }}
-          >
-            <User size={20} style={{ color: 'var(--text-muted)' }} />
-          </div>
-
-          <div>
-            <h3
-              className="text-sm font-mono font-bold tracking-wide uppercase group-hover:text-[var(--accent-primary)] transition-colors duration-200"
-              style={{ color: 'var(--text-primary)' }}
-            >
-              {name}
-            </h3>
-            <p
-              className="text-[10px] font-mono tracking-widest mt-1"
-              style={{ color: 'var(--text-muted)' }}
-            >
-              ID: {profile.id}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="flex gap-2 mb-4">
-        {/* Status Badge */}
-        <span
-          className="text-[9px] font-mono uppercase tracking-widest px-2 py-1"
-          style={{
-            backgroundColor: isHighAlert
-              ? 'color-mix(in srgb, var(--accent-primary) 15%, transparent)'
-              : 'transparent',
-            color: isHighAlert ? 'var(--accent-primary)' : 'var(--text-muted)',
-            border: isHighAlert ? '1px solid var(--accent-primary)' : '1px solid var(--border-color)',
-          }}
-        >
-          {status}
-        </span>
-        {/* Threat Badge */}
-        <span
-          className="text-[9px] font-mono uppercase tracking-widest px-2 py-1"
-          style={{
-            border: '1px solid var(--border-color)',
-            color: 'var(--text-muted)',
-          }}
-        >
-          T-LVL: {threat}
-        </span>
+      {/* Shred Effect Strips (Hidden unless exiting) */}
+      <div className="absolute inset-0 grid grid-cols-12 pointer-events-none z-50">
+        {[...Array(12)].map((_, i) => (
+          <motion.div
+            key={i}
+            custom={i}
+            variants={stripVariants}
+            className="h-full w-full bg-[var(--bg-surface)] border-x border-[var(--border-color)]/20 shadow-xl opacity-0 exit:opacity-100"
+          />
+        ))}
       </div>
 
       <div
-        className="flex-1 mt-auto pt-4"
-        style={{ borderTop: '1px dotted var(--border-color)' }}
+        className="flex flex-col p-5 group cursor-pointer transition-all duration-200 relative overflow-hidden"
+        style={{
+          backgroundColor: 'var(--bg-surface)',
+          border: '1px solid var(--border-color)',
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.borderColor = 'var(--accent-primary)';
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.borderColor = 'var(--border-color)';
+        }}
       >
-        <p
-          className="text-xs font-mono leading-relaxed line-clamp-3"
-          style={{ color: 'var(--text-muted)' }}
+        {/* Delete Button Overlay */}
+        <button
+          onClick={handleDelete}
+          className="absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 transition-opacity bg-red-900/20 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/50 z-10 cursor-pointer"
+          title={isPolice ? "Delete Record" : "Terminate Node"}
         >
-          {notes}
-        </p>
+          {isPolice ? <Trash2 size={14} /> : <X size={14} />}
+        </button>
+
+        <div className="flex items-start justify-between mb-4">
+          <div className="flex gap-4 items-center">
+            {/* Mugshot Placeholder */}
+            <div
+              className="w-12 h-12 flex items-center justify-center shrink-0"
+              style={{
+                backgroundColor: 'color-mix(in srgb, var(--bg-base) 50%, #000)',
+                border: '1px solid var(--border-color)',
+              }}
+            >
+              <User size={20} style={{ color: 'var(--text-muted)' }} />
+            </div>
+
+            <div>
+              <h3
+                className="text-sm font-mono font-bold tracking-wide uppercase group-hover:text-[var(--accent-primary)] transition-colors duration-200"
+                style={{ color: 'var(--text-primary)' }}
+              >
+                {name}
+              </h3>
+              <p
+                className="text-[10px] font-mono tracking-widest mt-1"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                ID: {profile.id}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-2 mb-4">
+          {/* Status Badge */}
+          <span
+            className="text-[9px] font-mono uppercase tracking-widest px-2 py-1"
+            style={{
+              backgroundColor: isHighAlert
+                ? 'color-mix(in srgb, var(--accent-primary) 15%, transparent)'
+                : 'transparent',
+              color: isHighAlert ? 'var(--accent-primary)' : 'var(--text-muted)',
+              border: isHighAlert ? '1px solid var(--accent-primary)' : '1px solid var(--border-color)',
+            }}
+          >
+            {status}
+          </span>
+          {/* Threat Badge */}
+          <span
+            className="text-[9px] font-mono uppercase tracking-widest px-2 py-1"
+            style={{
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-muted)',
+            }}
+          >
+            T-LVL: {threat}
+          </span>
+        </div>
+
+        <div
+          className="flex-1 mt-auto pt-4"
+          style={{ borderTop: '1px dotted var(--border-color)' }}
+        >
+          <p
+            className="text-xs font-mono leading-relaxed line-clamp-3"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            {notes}
+          </p>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
-import { MOCK_PROFILES } from '@/lib/profileData';
+import { useData } from '@/context/DataContext';
 import { motion } from 'framer-motion';
 
 interface LivePreviewProps {
@@ -17,6 +17,7 @@ export default function LivePreview({
   justification,
 }: LivePreviewProps) {
   const { theme } = useTheme();
+  const { profiles } = useData();
   const [refNumber, setRefNumber] = useState('000000');
   const isPolice = theme === 'police';
 
@@ -24,7 +25,7 @@ export default function LivePreview({
     setRefNumber(Math.floor(Math.random() * 1000000).toString().padStart(6, '0'));
   }, []);
 
-  const selectedProfile = MOCK_PROFILES.find((p) => p.id === targetId);
+  const selectedProfile = profiles.find((p) => p.id === targetId);
 
   const name =
     selectedProfile && isPolice

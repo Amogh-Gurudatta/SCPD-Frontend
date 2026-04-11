@@ -15,6 +15,8 @@ import {
   Flame,
   LogOut,
   Menu,
+  Database,
+  Crosshair,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -38,8 +40,8 @@ const NAV_ITEMS: NavItem[] = [
     href: '/database',
     policeLabel: 'Suspect Database',
     mafiaLabel: 'Target Roster',
-    policeIcon: ShieldAlert,
-    mafiaIcon: Skull,
+    policeIcon: Database,
+    mafiaIcon: Crosshair,
   },
   {
     href: '/generator',
@@ -47,6 +49,13 @@ const NAV_ITEMS: NavItem[] = [
     mafiaLabel: 'Burn Orders',
     policeIcon: FileText,
     mafiaIcon: Flame,
+  },
+  {
+    href: '/warrants',
+    policeLabel: 'Warrant Log',
+    mafiaLabel: 'Order Manifest',
+    policeIcon: ShieldAlert,
+    mafiaIcon: Skull,
   },
 ];
 

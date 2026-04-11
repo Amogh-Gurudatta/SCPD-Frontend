@@ -5,7 +5,8 @@ import { useTheme } from '@/context/ThemeContext';
 import { useData } from '@/context/DataContext';
 import FilterBar from '@/components/database/FilterBar';
 import ProfileCard from '@/components/database/ProfileCard';
-import { motion } from 'framer-motion';
+import AddRecordModal from '@/components/database/AddRecordModal';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -27,12 +28,14 @@ const itemVariants = {
       ease: 'circOut' 
     } 
   },
+  exit: { opacity: 0, scale: 0.95, transition: { duration: 0.1 } }
 };
 
 export default function DatabasePage() {
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [threatFilter, setThreatFilter] = useState('ALL');
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const { theme } = useTheme();
   const { profiles } = useData();
@@ -64,7 +67,7 @@ export default function DatabasePage() {
 
       return true;
     });
-  }, [query, statusFilter, threatFilter, isPolice]);
+  }, [profiles, query, statusFilter, threatFilter, isPolice]);
 
   return (
     <div className="min-h-screen relative overflow-y-auto" style={{ backgroundColor: 'var(--bg-base)' }}>
@@ -75,7 +78,10 @@ export default function DatabasePage() {
         setStatusFilter={setStatusFilter}
         threatFilter={threatFilter}
         setThreatFilter={setThreatFilter}
+        onAddRecord={() => setIsModalOpen(true)}
       />
+
+      <AddRecordModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       
       <div className="max-w-7xl mx-auto px-4 pb-12">
         {filteredProfiles.length > 0 ? (
@@ -85,11 +91,11 @@ export default function DatabasePage() {
             initial="hidden"
             animate="visible"
           >
-            {filteredProfiles.map((profile) => (
-              <motion.div key={profile.id} variants={itemVariants}>
-                <ProfileCard profile={profile} />
-              </motion.div>
-            ))}
+            <AnimatePresence mode="popLayout">
+              {filteredProfiles.map((profile) => (
+                <ProfileCard key={profile.id} profile={profile} />
+              ))}
+            </AnimatePresence>
           </motion.div>
         ) : (
           <div className="flex flex-col items-center justify-center p-20 opacity-50">

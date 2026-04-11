@@ -1,7 +1,7 @@
 'use client';
 
 import { useTheme } from '@/context/ThemeContext';
-import { MOCK_PROFILES, type ProfileData } from '@/lib/profileData';
+import { useData } from '@/context/DataContext';
 
 interface DocumentFormProps {
   targetId: string;
@@ -25,6 +25,7 @@ export default function DocumentForm({
   onSubmit,
 }: DocumentFormProps) {
   const { theme } = useTheme();
+  const { profiles } = useData();
   const isPolice = theme === 'police';
 
   return (
@@ -51,7 +52,7 @@ export default function DocumentForm({
           <option value="" disabled className="bg-black text-white">
             -- Select Identity --
           </option>
-          {MOCK_PROFILES.map((profile: ProfileData) => (
+          {profiles.map((profile) => (
             <option key={profile.id} value={profile.id} className="bg-black text-white">
               {isPolice ? profile.policeName : profile.mafiaName}
             </option>

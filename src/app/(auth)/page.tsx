@@ -102,7 +102,7 @@ export default function GatewayPage() {
           {/* Header */}
           <div className="mb-8 mt-2">
             <div className="flex items-center gap-3 mb-3">
-              <div onClick={handleIconClick} className="cursor-pointer" aria-hidden="true">
+              <div onClick={handleIconClick} className="cursor-default" aria-hidden="true">
                 {isPolice ? (
                   <Shield
                     size={20}

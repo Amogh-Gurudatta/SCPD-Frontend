@@ -17,7 +17,7 @@ interface DataContextType {
   warrantLog: WarrantEntry[];
   addProfile: (profile: ProfileData) => void;
   deleteProfile: (id: string) => void;
-  updateProfileStatus: (id: string, policeStatus: string, mafiaStatus: string) => void;
+  updateProfileStatus: (id: string, policeStatus: ProfileData['policeStatus'], mafiaStatus: ProfileData['mafiaStatus']) => void;
   addWarrant: (warrant: WarrantEntry) => void;
 }
 
@@ -35,7 +35,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setProfiles((prev) => prev.filter((p) => p.id !== id));
   }, []);
 
-  const updateProfileStatus = useCallback((id: string, policeStatus: string, mafiaStatus: string) => {
+  const updateProfileStatus = useCallback((id: string, policeStatus: ProfileData['policeStatus'], mafiaStatus: ProfileData['mafiaStatus']) => {
     setProfiles((prev) =>
       prev.map((p) =>
         p.id === id

@@ -1,9 +1,11 @@
 'use client';
 
+import { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { useData } from '@/context/DataContext';
 import { Search, Plus, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
+import AddRecordModal from './AddRecordModal';
 
 interface FilterBarProps {
   query: string;
@@ -12,6 +14,7 @@ interface FilterBarProps {
   setStatusFilter: (val: string) => void;
   threatFilter: string;
   setThreatFilter: (val: string) => void;
+  onAddRecord: () => void;
 }
 
 export default function FilterBar({
@@ -21,31 +24,10 @@ export default function FilterBar({
   setStatusFilter,
   threatFilter,
   setThreatFilter,
+  onAddRecord,
 }: FilterBarProps) {
   const { theme } = useTheme();
-  const { addProfile } = useData();
   const isPolice = theme === 'police';
-
-  const handleAdd = () => {
-    const id = `ID-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
-    const newProfile = {
-      id,
-      policeName: `Suspect_${id.split('-')[1]}`,
-      mafiaName: `Target_${id.split('-')[1]}`,
-      policeStatus: isPolice ? 'WANTED' : 'ACTIVE',
-      mafiaStatus: isPolice ? 'ONLINE' : 'COMPROMISED',
-      policeThreat: 'MEDIUM',
-      mafiaThreat: 'HIGH',
-      policeNotes: 'Newly initialized entry. Awaiting field investigation.',
-      mafiaNotes: 'Fresh link established. Monitoring uplink nodes.',
-    };
-    
-    addProfile(newProfile);
-    toast.success(isPolice ? 'NEW ENTRY CREATED' : 'NODE ADDED', {
-      description: `Identifier ${id} registered to active database.`,
-      className: 'font-mono uppercase text-xs',
-    });
-  };
 
   return (
     <div
@@ -83,12 +65,12 @@ export default function FilterBar({
           </div>
           
           <button
-            onClick={handleAdd}
-            className="flex items-center gap-2 px-4 py-2 text-[10px] font-mono font-bold uppercase tracking-widest transition-all hover:bg-[var(--accent-primary)] hover:text-black shrink-0"
-            style={{
-              border: '1px solid var(--accent-primary)',
-              color: 'var(--accent-primary)',
-            }}
+            onClick={onAddRecord}
+            className={`flex items-center gap-2 px-4 py-2 text-[10px] font-mono font-bold uppercase tracking-widest transition-all shrink-0 border border-[var(--accent-primary)] text-[var(--accent-primary)] cursor-pointer ${
+              isPolice 
+                ? 'hover:bg-[#2563eb] hover:text-white hover:border-[#2563eb]' 
+                : 'hover:bg-[#dc2626] hover:text-white hover:border-[#dc2626]'
+            }`}
           >
             {isPolice ? <UserPlus size={14} /> : <Plus size={14} />}
             <span className="hidden sm:inline">{isPolice ? 'Add Record' : 'Inject Node'}</span>

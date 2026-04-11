@@ -3,9 +3,9 @@ export interface ProfileData {
   policeName: string;
   mafiaName: string;
   policeStatus: 'ACTIVE' | 'WANTED' | 'CUSTODY';
-  mafiaStatus: 'ONLINE' | 'BURNED' | 'COMPROMISED';
-  policeThreat: 'LOW' | 'MEDIUM' | 'HIGH';
-  mafiaThreat: 'LOW' | 'MEDIUM' | 'HIGH';
+  mafiaStatus: 'ONLINE' | 'BURNED' | 'COMPROMISED' | 'KOMPROMAT';
+  policeThreat: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+  mafiaThreat: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
   policeNotes: string;
   mafiaNotes: string;
 }
@@ -60,12 +60,12 @@ export const MOCK_PROFILES: ProfileData[] = [
     policeName: 'Elias Thorne',
     mafiaName: 'The Architect',
     policeStatus: 'CUSTODY',
-    mafiaStatus: 'KOMPROMAT', // Using standard types but mapped below
+    mafiaStatus: 'KOMPROMAT',
     policeThreat: 'HIGH',
     mafiaThreat: 'MEDIUM',
     policeNotes: 'Held in maximum tech sector pending trial.',
     mafiaNotes: 'We need to arrange extraction before the arraignment.',
-  } as any, 
+  }, 
   {
     id: 'PR-106',
     policeName: 'Lydia "Stix" Martinez',
@@ -137,10 +137,10 @@ export const MOCK_PROFILES: ProfileData[] = [
     policeName: 'Capt. David Ross',
     mafiaName: 'The Warden',
     policeStatus: 'ACTIVE',
-    mafiaStatus: 'HIGH',
+    mafiaStatus: 'COMPROMISED',
     policeThreat: 'LOW',
     mafiaThreat: 'HIGH',
     policeNotes: 'Head of Cybercrimes Division.',
     mafiaNotes: 'Primary adversary. Do not directly engage.',
-  } as any
+  }
 ];
