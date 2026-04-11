@@ -1,0 +1,146 @@
+export interface ProfileData {
+  id: string;
+  policeName: string;
+  mafiaName: string;
+  policeStatus: 'ACTIVE' | 'WANTED' | 'CUSTODY';
+  mafiaStatus: 'ONLINE' | 'BURNED' | 'COMPROMISED';
+  policeThreat: 'LOW' | 'MEDIUM' | 'HIGH';
+  mafiaThreat: 'LOW' | 'MEDIUM' | 'HIGH';
+  policeNotes: string;
+  mafiaNotes: string;
+}
+
+export const MOCK_PROFILES: ProfileData[] = [
+  {
+    id: 'PR-101',
+    policeName: 'Marcus "Viper" Jenkins',
+    mafiaName: 'Operative Theta-9',
+    policeStatus: 'WANTED',
+    mafiaStatus: 'ONLINE',
+    policeThreat: 'HIGH',
+    mafiaThreat: 'LOW',
+    policeNotes: 'Armed robbery suspect. Known to frequent Sector 4.',
+    mafiaNotes: 'Running logistics for the Fremont drop. Keep comms encrypted.',
+  },
+  {
+    id: 'PR-102',
+    policeName: 'Sarah Collins',
+    mafiaName: 'Cipher (Alias)',
+    policeStatus: 'ACTIVE',
+    mafiaStatus: 'BURNED',
+    policeThreat: 'LOW',
+    mafiaThreat: 'HIGH',
+    policeNotes: 'Parole officer check-in scheduled for 14:00.',
+    mafiaNotes: 'Suspected leak. Cut all node connections immediately.',
+  },
+  {
+    id: 'PR-103',
+    policeName: 'Unknown (Subject K)',
+    mafiaName: 'Ghostwriter',
+    policeStatus: 'WANTED',
+    mafiaStatus: 'ONLINE',
+    policeThreat: 'MEDIUM',
+    mafiaThreat: 'LOW',
+    policeNotes: 'Wanted for slicing municipal grid. Location unknown.',
+    mafiaNotes: 'Best runner we have. Routing through proxy 7.',
+  },
+  {
+    id: 'PR-104',
+    policeName: 'Det. Robert Vance',
+    mafiaName: 'Bloodhound (Lv.4 Auth)',
+    policeStatus: 'ACTIVE',
+    mafiaStatus: 'COMPROMISED',
+    policeThreat: 'LOW',
+    mafiaThreat: 'HIGH',
+    policeNotes: 'Currently leading taskforce Alpha in the arts district.',
+    mafiaNotes: 'Getting too close to the payload sequence. Observe only.',
+  },
+  {
+    id: 'PR-105',
+    policeName: 'Elias Thorne',
+    mafiaName: 'The Architect',
+    policeStatus: 'CUSTODY',
+    mafiaStatus: 'KOMPROMAT', // Using standard types but mapped below
+    policeThreat: 'HIGH',
+    mafiaThreat: 'MEDIUM',
+    policeNotes: 'Held in maximum tech sector pending trial.',
+    mafiaNotes: 'We need to arrange extraction before the arraignment.',
+  } as any, 
+  {
+    id: 'PR-106',
+    policeName: 'Lydia "Stix" Martinez',
+    mafiaName: 'Broker X',
+    policeStatus: 'WANTED',
+    mafiaStatus: 'ONLINE',
+    policeThreat: 'MEDIUM',
+    mafiaThreat: 'MEDIUM',
+    policeNotes: 'Wanted for distribution of illegal cybernetic mods.',
+    mafiaNotes: 'Holding the keys to the vault. Proceed with transaction.',
+  },
+  {
+    id: 'PR-107',
+    policeName: 'Subject Delta',
+    mafiaName: 'Wraith',
+    policeStatus: 'ACTIVE',
+    mafiaStatus: 'ONLINE',
+    policeThreat: 'HIGH',
+    mafiaThreat: 'HIGH',
+    policeNotes: 'Highly dangerous. Do not engage without backup.',
+    mafiaNotes: 'A loose cannon, but useful for wetwork.',
+  },
+  {
+    id: 'PR-108',
+    policeName: 'Officer Julia Chen',
+    mafiaName: 'Inside Track',
+    policeStatus: 'ACTIVE',
+    mafiaStatus: 'ONLINE',
+    policeThreat: 'LOW',
+    mafiaThreat: 'LOW',
+    policeNotes: 'Clean record. Commended for service in Sector 9.',
+    mafiaNotes: 'Our mole in the LVPD tactical division. Maintain cover.',
+  },
+  {
+    id: 'PR-109',
+    policeName: 'Dr. Aris Vane',
+    mafiaName: 'The Surgeon',
+    policeStatus: 'WANTED',
+    mafiaStatus: 'COMPROMISED',
+    policeThreat: 'MEDIUM',
+    mafiaThreat: 'HIGH',
+    policeNotes: 'Underground cyber-doc. Operating without a license.',
+    mafiaNotes: 'LVPD raided his clinic. Consider his nodes exposed.',
+  },
+  {
+    id: 'PR-110',
+    policeName: 'Sam "Trigger" Lee',
+    mafiaName: 'Enforcer 01',
+    policeStatus: 'CUSTODY',
+    mafiaStatus: 'BURNED',
+    policeThreat: 'MEDIUM',
+    mafiaThreat: 'LOW',
+    policeNotes: 'Serving 5 years for aggravated assault.',
+    mafiaNotes: 'Liability. Cut him loose.',
+  },
+  {
+    id: 'PR-111',
+    policeName: 'Unknown (The Courier)',
+    mafiaName: 'Mercury',
+    policeStatus: 'WANTED',
+    mafiaStatus: 'ONLINE',
+    policeThreat: 'LOW',
+    mafiaThreat: 'MEDIUM',
+    policeNotes: 'Suspected of moving encrypted drives across borders.',
+    mafiaNotes: 'Delivery is 2 clicks out. Ensure route is clear.',
+  },
+  {
+    id: 'PR-112',
+    policeName: 'Capt. David Ross',
+    mafiaName: 'The Warden',
+    policeStatus: 'ACTIVE',
+    mafiaStatus: 'HIGH',
+    policeThreat: 'LOW',
+    mafiaThreat: 'HIGH',
+    policeNotes: 'Head of Cybercrimes Division.',
+    mafiaNotes: 'Primary adversary. Do not directly engage.',
+  } as any
+];
