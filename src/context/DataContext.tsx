@@ -1,9 +1,10 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
-import { MOCK_PROFILES, type ProfileData } from '@/lib/profileData';
+import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { type ProfileData } from '@/lib/profileData';
 
-interface WarrantEntry {
+export interface WarrantEntry {
   id: string;
   targetId: string;
   timestamp: string;
@@ -12,48 +13,214 @@ interface WarrantEntry {
   type: 'WARRANT' | 'BURN';
 }
 
+export interface IncidentData {
+  id: string;
+  title?: string;
+  description?: string;
+  timestamp?: string;
+  [key: string]: any; // Fallback for unknown incident fields
+}
+
 interface DataContextType {
   profiles: ProfileData[];
   warrantLog: WarrantEntry[];
-  addProfile: (profile: ProfileData) => void;
-  deleteProfile: (id: string) => void;
-  updateProfileStatus: (id: string, policeStatus: ProfileData['policeStatus'], mafiaStatus: ProfileData['mafiaStatus']) => void;
-  addWarrant: (warrant: WarrantEntry) => void;
+  incidents: IncidentData[];
+  addProfile: (profile: ProfileData) => Promise<void>;
+  deleteProfile: (id: string) => Promise<void>;
+  updateProfileStatus: (id: string, policeStatus: ProfileData['policeStatus'], mafiaStatus: ProfileData['mafiaStatus']) => Promise<void>;
+  addWarrant: (warrant: WarrantEntry) => Promise<void>;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
+// Helpers to map between Django snake_case JSON and frontend camelCase shapes
+function mapSuspectToFrontend(data: any): ProfileData {
+  return {
+    id: data.id,
+    policeName: data.police_name || '',
+    mafiaName: data.mafia_name || '',
+    policeStatus: data.police_status || 'ACTIVE',
+    mafiaStatus: data.mafia_status || 'ONLINE',
+    policeThreat: data.police_threat || 'LOW',
+    mafiaThreat: data.mafia_threat || 'LOW',
+    policeNotes: data.police_notes || '',
+    mafiaNotes: data.mafia_notes || '',
+  };
+}
+
+function mapSuspectToBackend(data: Partial<ProfileData>): any {
+  return {
+    ...(data.id && { id: data.id }),
+    ...(data.policeName && { police_name: data.policeName }),
+    ...(data.mafiaName && { mafia_name: data.mafiaName }),
+    ...(data.policeStatus && { police_status: data.policeStatus }),
+    ...(data.mafiaStatus && { mafia_status: data.mafiaStatus }),
+    ...(data.policeThreat && { police_threat: data.policeThreat }),
+    ...(data.mafiaThreat && { mafia_threat: data.mafiaThreat }),
+    ...(data.policeNotes && { police_notes: data.policeNotes }),
+    ...(data.mafiaNotes && { mafia_notes: data.mafiaNotes }),
+  };
+}
+
+function mapWarrantToFrontend(data: any): WarrantEntry {
+  return {
+    id: data.id,
+    targetId: data.target_id || '',
+    timestamp: data.timestamp || new Date().toISOString(),
+    urgency: data.urgency || 0,
+    justification: data.justification || '',
+    type: data.type || 'WARRANT',
+  };
+}
+
+function mapWarrantToBackend(data: Partial<WarrantEntry>): any {
+  return {
+    ...(data.id && { id: data.id }),
+    ...(data.targetId && { target_id: data.targetId }),
+    ...(data.timestamp && { timestamp: data.timestamp }),
+    ...(typeof data.urgency !== 'undefined' && { urgency: data.urgency }),
+    ...(data.justification && { justification: data.justification }),
+    ...(data.type && { type: data.type }),
+  };
+}
+
 export function DataProvider({ children }: { children: ReactNode }) {
-  const [profiles, setProfiles] = useState<ProfileData[]>(MOCK_PROFILES);
+  const router = useRouter();
+  const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [warrantLog, setWarrantLog] = useState<WarrantEntry[]>([]);
+  const [incidents, setIncidents] = useState<IncidentData[]>([]);
 
-  const addProfile = useCallback((newProfile: ProfileData) => {
-    setProfiles((prev) => [newProfile, ...prev]);
-  }, []);
+  // Internal API Fetch helper that attaches JWT and handles 401s
+  const apiFetch = useCallback(async (endpoint: string, options: RequestInit = {}) => {
+    const token = localStorage.getItem('access');
+    const headers = new Headers(options.headers || {});
+    
+    if (token) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
+    headers.set('Content-Type', 'application/json');
 
-  const deleteProfile = useCallback((id: string) => {
-    setProfiles((prev) => prev.filter((p) => p.id !== id));
-  }, []);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+    const response = await fetch(`${apiUrl}${endpoint}`, { ...options, headers });
 
-  const updateProfileStatus = useCallback((id: string, policeStatus: ProfileData['policeStatus'], mafiaStatus: ProfileData['mafiaStatus']) => {
-    setProfiles((prev) =>
-      prev.map((p) =>
-        p.id === id
-          ? { ...p, policeStatus, mafiaStatus }
-          : p
-      )
-    );
-  }, []);
+    if (response.status === 401) {
+      localStorage.removeItem('access');
+      localStorage.removeItem('refresh');
+      router.replace('/');
+      throw new Error('Unauthorized');
+    }
 
-  const addWarrant = useCallback((entry: WarrantEntry) => {
-    setWarrantLog((prev) => [entry, ...prev]);
-  }, []);
+    return response;
+  }, [router]);
+
+  // Initial Fetch logic
+  useEffect(() => {
+    async function loadInitialData() {
+      try {
+        // Parallel fetching
+        const [suspectsRes, warrantsRes, incidentsRes] = await Promise.all([
+          apiFetch('/suspects/').catch(() => null),
+          apiFetch('/warrants/').catch(() => null),
+          apiFetch('/incidents/').catch(() => null),
+        ]);
+
+        if (suspectsRes?.ok) {
+          const data = await suspectsRes.json();
+          setProfiles(Array.isArray(data) ? data.map(mapSuspectToFrontend) : []);
+        }
+
+        if (warrantsRes?.ok) {
+          const data = await warrantsRes.json();
+          setWarrantLog(Array.isArray(data) ? data.map(mapWarrantToFrontend).reverse() : []);
+        }
+
+        if (incidentsRes?.ok) {
+          const data = await incidentsRes.json();
+          setIncidents(Array.isArray(data) ? data : []);
+        }
+      } catch (error) {
+        console.error('Failed to load initial data:', error);
+      }
+    }
+
+    // Only load if there's a token present to avoid immediate 401s on the login page
+    if (typeof window !== 'undefined' && localStorage.getItem('access')) {
+      loadInitialData();
+    }
+  }, [apiFetch]);
+
+  const addProfile = useCallback(async (newProfile: ProfileData) => {
+    try {
+      const payload = mapSuspectToBackend(newProfile);
+      const res = await apiFetch('/suspects/', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+      if (res.ok || res.status === 201) {
+        const savedData = await res.json();
+        setProfiles((prev) => [mapSuspectToFrontend(savedData), ...prev]);
+      }
+    } catch (e) {
+      console.error('addProfile failed', e);
+    }
+  }, [apiFetch]);
+
+  const deleteProfile = useCallback(async (id: string) => {
+    try {
+      const res = await apiFetch(`/suspects/${id}/`, {
+        method: 'DELETE',
+      });
+      if (res.ok || res.status === 204) {
+        setProfiles((prev) => prev.filter((p) => p.id !== id));
+      }
+    } catch (e) {
+      console.error('deleteProfile failed', e);
+    }
+  }, [apiFetch]);
+
+  const updateProfileStatus = useCallback(async (id: string, policeStatus: ProfileData['policeStatus'], mafiaStatus: ProfileData['mafiaStatus']) => {
+    try {
+      const payload = mapSuspectToBackend({ policeStatus, mafiaStatus });
+      const res = await apiFetch(`/suspects/${id}/`, {
+        method: 'PATCH',
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        setProfiles((prev) =>
+          prev.map((p) =>
+            p.id === id
+              ? { ...p, policeStatus, mafiaStatus }
+              : p
+          )
+        );
+      }
+    } catch (e) {
+      console.error('updateProfileStatus failed', e);
+    }
+  }, [apiFetch]);
+
+  const addWarrant = useCallback(async (entry: WarrantEntry) => {
+    try {
+      const payload = mapWarrantToBackend(entry);
+      const res = await apiFetch('/warrants/', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+      if (res.ok || res.status === 201) {
+        const savedData = await res.json();
+        setWarrantLog((prev) => [mapWarrantToFrontend(savedData), ...prev]);
+      }
+    } catch (e) {
+      console.error('addWarrant failed', e);
+    }
+  }, [apiFetch]);
 
   return (
     <DataContext.Provider
       value={{
         profiles,
         warrantLog,
+        incidents,
         addProfile,
         deleteProfile,
         updateProfileStatus,

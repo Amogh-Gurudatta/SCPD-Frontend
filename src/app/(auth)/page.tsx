@@ -10,6 +10,13 @@ export default function GatewayPage() {
   const router = useRouter();
   const [fieldOne, setFieldOne] = useState('');
   const [fieldTwo, setFieldTwo] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorInfo, setErrorInfo] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   
   // Backdoor states
   const [tapData, setTapData] = useState({ count: 0, lastTime: 0 });
@@ -71,9 +78,42 @@ export default function GatewayPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    router.push('/map');
+    if (!fieldOne || !fieldTwo) return;
+
+    setIsLoading(true);
+    setErrorInfo(null);
+
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+
+    try {
+      const response = await fetch(`${apiUrl}/token/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: fieldOne,
+          password: fieldTwo,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        localStorage.setItem('access', data.access);
+        localStorage.setItem('refresh', data.refresh);
+        router.push('/map');
+      } else if (response.status === 401) {
+        setErrorInfo('ACCESS DENIED: Invalid credentials');
+      } else {
+        setErrorInfo(`ERROR: Unexpected server response (${response.status})`);
+      }
+    } catch (error) {
+      setErrorInfo('ERROR: Network offline or backend unreachable');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -196,16 +236,24 @@ export default function GatewayPage() {
             <button
               id="auth-submit"
               type="submit"
-              className="w-full py-3 text-xs font-mono font-bold uppercase tracking-[0.3em] cursor-pointer transition-opacity duration-150 hover:opacity-80"
+              disabled={isLoading || (isMounted && (!fieldOne || !fieldTwo))}
+              className="w-full py-3 text-xs font-mono font-bold uppercase tracking-[0.3em] cursor-pointer transition-opacity duration-150 hover:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 backgroundColor: 'var(--accent-primary)',
                 color: isPolice ? '#020617' : '#000000',
                 border: 'none',
               }}
             >
-              Authenticate
+              {isLoading ? 'TRANSMITTING...' : 'Authenticate'}
             </button>
           </form>
+
+          {/* Error Details */}
+          {errorInfo && (
+            <div className="mt-4 p-2 tracking-widest text-[10px] font-mono text-center uppercase border border-red-900/50 text-red-500 bg-red-900/10">
+              {errorInfo}
+            </div>
+          )}
 
           {/* Footer */}
           <div className="mt-8 pt-4" style={{ borderTop: '1px solid var(--border-color)' }}>
