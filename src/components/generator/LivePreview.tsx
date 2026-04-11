@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { MOCK_PROFILES } from '@/lib/profileData';
 
@@ -15,7 +16,12 @@ export default function LivePreview({
   justification,
 }: LivePreviewProps) {
   const { theme } = useTheme();
+  const [refNumber, setRefNumber] = useState('000000');
   const isPolice = theme === 'police';
+
+  useEffect(() => {
+    setRefNumber(Math.floor(Math.random() * 1000000).toString().padStart(6, '0'));
+  }, []);
 
   const selectedProfile = MOCK_PROFILES.find((p) => p.id === targetId);
 
@@ -32,73 +38,77 @@ export default function LivePreview({
   const currentDate = new Date().toISOString().split('T')[0];
 
   return (
-    <div className="w-full flex justify-center p-4">
+    <div className="w-full h-full flex items-start justify-center p-4">
       <div
-        className="relative w-full max-w-lg aspect-[1/1.4] overflow-hidden flex flex-col p-8 transition-colors duration-200"
+        id="warrant-document"
+        className="relative w-full max-w-[350px] sm:max-w-md md:max-w-lg shadow-2xl flex flex-col p-[5%] transition-all duration-200 overflow-hidden bg-[var(--bg-surface)]"
         style={{
-          backgroundColor: 'color-mix(in srgb, var(--bg-surface) 95%, transparent)',
+          aspectRatio: '1 / 1.414',
           border: '2px solid var(--border-color)',
+          fontSize: 'clamp(7px, 2vw, 13px)',
         }}
       >
         {/* Dynamic Watermark / Background Styling */}
         <div 
-          className="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-center font-bold text-9xl tracking-tighter mix-blend-overlay"
-          style={{ color: 'var(--text-primary)' }}
+          className="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-center font-bold tracking-tighter mix-blend-overlay"
+          style={{ 
+            color: 'var(--text-primary)',
+            fontSize: '12em'
+          }}
         >
           {isPolice ? 'LVPD' : 'SYN'}
         </div>
 
         {/* Content */}
-        <div className="relative z-10 flex-1 flex flex-col">
+        <div className="relative z-10 flex-1 flex flex-col h-full overflow-hidden">
           {/* Header */}
           <div
-            className="pb-4 mb-6"
+            className="pb-[4%] mb-[6%]"
             style={{ borderBottom: '2px solid var(--border-color)' }}
           >
             <h1
-              className="text-lg font-mono font-bold tracking-widest uppercase text-center"
-              style={{ color: 'var(--text-primary)' }}
+              className="font-mono font-bold tracking-widest uppercase text-center"
+              style={{ color: 'var(--text-primary)', fontSize: '1.4em' }}
             >
               {isPolice ? 'LVPD Official Warrant' : 'Syndicate Burn Protocol'}
             </h1>
-            <div className="flex justify-between mt-4 text-[10px] font-mono tracking-widest text-[#64748b]">
+            <div className="flex justify-between mt-[4%] font-mono tracking-widest text-[#64748b]" style={{ fontSize: '0.8em' }}>
               <span>DATE: {currentDate}</span>
-              <span>REF: {Math.floor(Math.random() * 100000).toString().padStart(6, '0')}</span>
+              <span>REF: {refNumber}</span>
             </div>
           </div>
 
           {/* Target Info Box */}
           <div
-            className="p-4 mb-6"
-            style={{ backgroundColor: 'color-mix(in srgb, var(--bg-base) 50%, #000)' }}
+            className="p-[5%] mb-[6%] bg-black"
           >
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-[1em]">
               <div className="flex justify-between items-baseline">
-                <span className="text-[10px] uppercase font-mono tracking-widest text-[var(--text-muted)]">
+                <span className="uppercase font-mono tracking-widest text-[var(--text-muted)]" style={{ fontSize: '0.7em' }}>
                   {isPolice ? 'Subject Name:' : 'Target Alias:'}
                 </span>
                 <span
-                  className="font-mono font-bold uppercase tracking-wider text-sm"
-                  style={{ color: 'var(--text-primary)' }}
+                  className="font-mono font-bold uppercase tracking-wider"
+                  style={{ color: 'var(--text-primary)', fontSize: '1.1em' }}
                 >
                   {name}
                 </span>
               </div>
               <div className="flex justify-between items-baseline">
-                <span className="text-[10px] uppercase font-mono tracking-widest text-[var(--text-muted)]">
+                <span className="uppercase font-mono tracking-widest text-[var(--text-muted)]" style={{ fontSize: '0.7em' }}>
                   {isPolice ? 'Database ID:' : 'Node ID:'}
                 </span>
-                <span className="font-mono text-xs text-[var(--text-muted)]">
+                <span className="font-mono text-[var(--text-muted)]" style={{ fontSize: '0.8em' }}>
                   {targetId || 'N/A'}
                 </span>
               </div>
               <div className="flex justify-between items-baseline">
-                <span className="text-[10px] uppercase font-mono tracking-widest text-[var(--text-muted)]">
+                <span className="uppercase font-mono tracking-widest text-[var(--text-muted)]" style={{ fontSize: '0.7em' }}>
                   {isPolice ? 'Current Status:' : 'Uplink Status:'}
                 </span>
                 <span
-                  className="font-mono text-xs uppercase"
-                  style={{ color: 'var(--accent-primary)' }}
+                  className="font-mono uppercase"
+                  style={{ color: 'var(--accent-primary)', fontSize: '0.8em' }}
                 >
                   {status}
                 </span>
@@ -107,12 +117,12 @@ export default function LivePreview({
           </div>
 
           {/* Urgency Meter */}
-          <div className="mb-6">
-            <span className="text-[10px] uppercase font-mono tracking-widest text-[var(--text-muted)] block mb-2">
+          <div className="mb-[6%]">
+            <span className="uppercase font-mono tracking-widest text-[var(--text-muted)] block mb-[2%]" style={{ fontSize: '0.7em' }}>
               {isPolice ? 'Priority Level:' : 'Hazard Level:'} {urgency}/100
             </span>
             <div
-              className="w-full h-2"
+              className="w-full h-[0.6em]"
               style={{ backgroundColor: 'var(--border-color)' }}
             >
               <div
@@ -125,24 +135,41 @@ export default function LivePreview({
             </div>
           </div>
 
-          {/* Justification Text */}
-          <div className="flex-1">
-            <span className="text-[10px] uppercase font-mono tracking-widest text-[var(--text-muted)] block mb-2">
+          {/* Justification Text - SCROLLABLE DOSSIER STYLE */}
+          <div className="flex-1 overflow-y-auto pr-[2%] custom-scrollbar">
+            <span className="uppercase font-mono tracking-widest text-[var(--text-muted)] block mb-[2%]" style={{ fontSize: '0.7em' }}>
               {isPolice ? 'Incident Justification:' : 'Rationale:'}
             </span>
             <p
-              className="font-mono text-xs leading-relaxed text-[var(--text-primary)] whitespace-pre-wrap"
+              className="font-mono leading-relaxed text-[var(--text-primary)] whitespace-pre-wrap"
+              style={{ fontSize: '0.9em' }}
             >
               {justification || (isPolice ? '[Enter warrant justification notes here...]' : '[Enter operational rationale here...]')}
             </p>
           </div>
 
+          <style>{`
+            .custom-scrollbar::-webkit-scrollbar {
+              width: 2px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+              background: transparent;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+              background: var(--border-color);
+            }
+          `}</style>
+
+          {/* Spacer to separate rationale and footer if text is short */}
+          {!justification && <div className="h-[2em]" />}
+
           {/* Footer Warning */}
           <div
-            className="pt-4 mt-6 text-center text-[8px] font-mono tracking-widest uppercase"
+            className="pt-[2%] pb-[4%] text-center font-mono tracking-widest uppercase mt-auto"
             style={{ 
               borderTop: '1px solid var(--border-color)',
-              color: 'var(--text-muted)' 
+              color: 'var(--text-muted)',
+              fontSize: '0.65em'
             }}
           >
             {isPolice
@@ -152,21 +179,43 @@ export default function LivePreview({
           
         </div>
 
-        {/* Dynamic Rubber Stamp Overlay */}
+        {/* Dynamic Rubber Stamp Overlay - SVG Implementation for html2canvas stability */}
         {urgency > 80 && (
           <div
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -rotate-12 pointer-events-none z-20 flex items-center justify-center p-3"
+            className="absolute top-1/2 left-1/2 pointer-events-none z-20"
             style={{
-              border: '6px solid var(--accent-primary)',
-              color: 'var(--accent-primary)',
+              transform: 'translate(-50%, -50%) rotate(-12deg)',
               opacity: 0.8,
+              width: '75%', // Covers ~3/4 of the document width
             }}
           >
-            <span
-              className="font-bold font-mono tracking-[0.3em] uppercase text-4xl whitespace-nowrap"
+            <svg 
+              width="100%" 
+              height="auto" 
+              viewBox="0 0 400 120"
+              className="drop-shadow-2xl"
             >
-              {isPolice ? 'APPROVED: ALPHA' : 'CRITICAL HIT'}
-            </span>
+              <rect 
+                x="5" 
+                y="5" 
+                width="390" 
+                height="110" 
+                fill="none" 
+                stroke={isPolice ? 'var(--accent-primary)' : '#991b1b'} 
+                strokeWidth="10"
+              />
+              <text
+                x="50%"
+                y="52%"
+                dominantBaseline="middle"
+                textAnchor="middle"
+                fill={isPolice ? 'var(--accent-primary)' : '#991b1b'}
+                className="font-mono font-bold uppercase"
+                style={{ fontSize: '32px', letterSpacing: '4px' }}
+              >
+                {isPolice ? 'APPROVED: ALPHA' : 'CRITICAL HIT'}
+              </text>
+            </svg>
           </div>
         )}
       </div>

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import DocumentForm from '@/components/generator/DocumentForm';
 import LivePreview from '@/components/generator/LivePreview';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 export default function GeneratorPage() {
   const [targetId, setTargetId] = useState('');
@@ -14,7 +16,7 @@ export default function GeneratorPage() {
   const { theme } = useTheme();
   const isPolice = theme === 'police';
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!targetId || isSubmitting) return;
 
@@ -47,6 +49,57 @@ export default function GeneratorPage() {
       // Ignore if Audio API blocked by browser without interaction
     }
 
+    // PDF Generation
+    try {
+      const docElement = document.getElementById('warrant-document');
+      if (docElement) {
+        // Snapshot the element
+        const canvas = await html2canvas(docElement, {
+          scale: 2, // High resolution
+          useCORS: true,
+          backgroundColor: '#050505', // Force black background
+        });
+
+        const imgData = canvas.toDataURL('image/png');
+        
+        // A4 format: 210mm x 297mm
+        const pdf = new jsPDF({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4',
+        });
+
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        
+        // Add 10mm margin for clean look
+        const margin = 10;
+        const maxWidth = pageWidth - (margin * 2);
+        const maxHeight = pageHeight - (margin * 2);
+
+        let finalWidth = maxWidth;
+        let finalHeight = (canvas.height * maxWidth) / canvas.width;
+
+        // If height is still too much, scale down based on height
+        if (finalHeight > maxHeight) {
+          finalHeight = maxHeight;
+          finalWidth = (canvas.width * maxHeight) / canvas.height;
+        }
+
+        // Center it
+        const xOffset = (pageWidth - finalWidth) / 2;
+        const yOffset = (pageHeight - finalHeight) / 2;
+
+        pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
+        
+        // Download document
+        const filename = isPolice ? `LVPD_Warrant_${targetId}.pdf` : `SYN_Burn_Order_${targetId}.pdf`;
+        pdf.save(filename);
+      }
+    } catch (error) {
+      console.error('PDF Generation failed', error);
+    }
+
     // Reset after 2 seconds
     setTimeout(() => {
       setIsSubmitting(false);
@@ -57,7 +110,7 @@ export default function GeneratorPage() {
   };
 
   return (
-    <div className="min-h-screen relative p-6 lg:p-12 overflow-y-auto" style={{ backgroundColor: 'var(--bg-base)' }}>
+    <div className="min-h-screen relative p-6 pt-20 lg:p-12 lg:pt-12 pb-24 overflow-y-auto" style={{ backgroundColor: 'var(--bg-base)' }}>
       <div className="max-w-7xl mx-auto flex flex-col gap-6">
 
         {/* Header */}
@@ -71,7 +124,7 @@ export default function GeneratorPage() {
         </div>
 
         {/* Split Screen Container */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-start mt-8">
+        <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-16 items-start mt-8">
           {/* Left Column: Form */}
           <div className="flex flex-col h-full w-full">
             <DocumentForm 
@@ -87,7 +140,7 @@ export default function GeneratorPage() {
           </div>
 
           {/* Right Column: Live Document Preview */}
-          <div className="flex flex-col h-full w-full items-center justify-center pt-8 lg:pt-0 sticky top-12">
+          <div className="flex flex-col w-full items-center lg:justify-center pt-2 lg:pt-0 lg:sticky lg:top-24 relative z-0">
             <LivePreview 
                targetId={targetId}
                urgency={urgency}

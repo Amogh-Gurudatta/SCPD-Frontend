@@ -1,8 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { MOCK_NODES, type MapNode } from '@/lib/mockData';
-import { Crosshair } from 'lucide-react';
+import { Crosshair, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface IncidentFeedProps {
   onSelectNode: (node: MapNode) => void;
@@ -14,24 +15,28 @@ export default function IncidentFeed({
   activeId,
 }: IncidentFeedProps) {
   const { theme } = useTheme();
+  const [isExpanded, setIsExpanded] = useState(false);
   const isPolice = theme === 'police';
 
   return (
     <div
-      className="absolute top-6 right-6 w-80 z-[1000] flex flex-col"
+      className={`absolute top-4 md:top-6 right-4 md:right-6 w-[calc(100%-2rem)] md:w-80 z-[1000] flex flex-col transition-all duration-300 ${isExpanded ? 'max-h-[80vh]' : 'max-h-[48px] md:max-h-[calc(100vh-48px)]'}`}
       style={{
         backgroundColor: 'var(--bg-surface)',
         backdropFilter: 'blur(24px)',
         WebkitBackdropFilter: 'blur(24px)',
         border: '1px solid var(--border-color)',
-        maxHeight: 'calc(100vh - 48px)',
       }}
     >
       <div
-        className="px-4 py-3 sticky top-0"
+        className={`px-4 py-3 sticky top-0 flex justify-between items-center cursor-pointer md:cursor-default ${isExpanded ? 'border-b border-[var(--border-color)]' : 'md:border-b md:border-[var(--border-color)]'}`}
         style={{
-          borderBottom: '1px solid var(--border-color)',
           backgroundColor: 'color-mix(in srgb, var(--bg-surface) 90%, transparent)',
+        }}
+        onClick={() => {
+          if (window && window.innerWidth < 768) {
+            setIsExpanded(!isExpanded);
+          }
         }}
       >
         <h2
@@ -41,9 +46,18 @@ export default function IncidentFeed({
           <Crosshair size={14} style={{ color: 'var(--accent-primary)' }} />
           {isPolice ? 'Active Dispatches' : 'Node Uplinks'}
         </h2>
+
+        {/* Mobile Toggle Icon */}
+        <div className="md:hidden">
+          {isExpanded ? (
+            <ChevronUp size={16} style={{ color: 'var(--text-primary)' }} />
+          ) : (
+            <ChevronDown size={16} style={{ color: 'var(--text-primary)' }} />
+          )}
+        </div>
       </div>
 
-      <div className="overflow-y-auto flex-1 p-2 space-y-2">
+      <div className={`overflow-y-auto flex-1 p-2 space-y-2 md:block ${isExpanded ? 'block' : 'hidden'}`}>
         {MOCK_NODES.map((node) => {
           const isActive = activeId === node.id;
 

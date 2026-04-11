@@ -108,7 +108,7 @@ export default function DocumentForm({
       </div>
 
       {/* Textarea */}
-      <div className="flex flex-col gap-2 flex-1 min-h-[200px]">
+      <div className="flex flex-col gap-2 h-48">
         <label className="text-[10px] uppercase font-mono tracking-widest text-[var(--text-muted)]">
           {isPolice ? 'Incident Justification:' : 'Burn Order Rationale:'}
         </label>
@@ -116,7 +116,7 @@ export default function DocumentForm({
           value={justification}
           onChange={(e) => setJustification(e.target.value)}
           disabled={isSubmitting}
-          className="w-full flex-1 px-4 py-3 text-sm font-mono outline-none resize-none transition-colors duration-200"
+          className="w-full h-full px-4 py-3 text-sm font-mono outline-none resize-none transition-colors duration-200"
           placeholder={isPolice ? 'Detail probable cause...' : 'Detail logic for extraction...'}
           style={{
             backgroundColor: 'var(--bg-surface)',

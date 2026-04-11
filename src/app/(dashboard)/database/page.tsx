@@ -55,7 +55,7 @@ export default function DatabasePage() {
       
       <div className="max-w-7xl mx-auto px-4 pb-12">
         {filteredProfiles.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredProfiles.map((profile) => (
               <ProfileCard key={profile.id} profile={profile} />
             ))}

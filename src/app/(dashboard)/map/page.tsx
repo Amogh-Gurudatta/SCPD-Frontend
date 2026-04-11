@@ -34,7 +34,7 @@ export default function MapPage() {
   }, [theme]);
 
   return (
-    <div className="relative w-full h-full min-h-screen overflow-hidden">
+    <div className="relative w-full h-[calc(100dvh-4rem)] md:h-screen overflow-hidden">
       {/* Absolute floating UI */}
       <IncidentFeed onSelectNode={setActiveNode} activeId={activeNode?.id} />
       

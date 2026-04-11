@@ -2,16 +2,74 @@
 
 import { useTheme } from '@/context/ThemeContext';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Shield, Terminal } from 'lucide-react';
 
 export default function GatewayPage() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme, setMafiaSession } = useTheme();
   const router = useRouter();
   const [fieldOne, setFieldOne] = useState('');
   const [fieldTwo, setFieldTwo] = useState('');
+  
+  // Backdoor states
+  const [tapData, setTapData] = useState({ count: 0, lastTime: 0 });
+  const [codeTriggered, setCodeTriggered] = useState(false);
 
   const isPolice = theme === 'police';
+
+  // Force Police theme and reset session on mount
+  useEffect(() => {
+    setTheme('police');
+    setMafiaSession(false);
+  }, [setTheme, setMafiaSession]);
+
+  // Monitor for dual-trigger activation
+  useEffect(() => {
+    if (isPolice && codeTriggered && tapData.count >= 3) {
+      setTheme('mafia');
+      setMafiaSession(true);
+      setCodeTriggered(false);
+      setTapData({ count: 0, lastTime: 0 });
+    }
+  }, [isPolice, codeTriggered, tapData.count, setTheme, setMafiaSession]);
+
+  const handleIconClick = () => {
+    // Failsafe: Mafia mode only needs 3 taps to return
+    if (!isPolice) {
+      const now = Date.now();
+      if (now - tapData.lastTime > 2000) {
+        setTapData({ count: 1, lastTime: now });
+        return;
+      }
+      const newCount = tapData.count + 1;
+      if (newCount >= 3) {
+        setTheme('police');
+        setTapData({ count: 0, lastTime: 0 });
+      } else {
+        setTapData({ count: newCount, lastTime: now });
+      }
+      return;
+    }
+
+    // Police mode: One half of the dual-trigger
+    const now = Date.now();
+    if (now - tapData.lastTime > 2000) {
+      setTapData({ count: 1, lastTime: now });
+      return;
+    }
+    const newCount = tapData.count + 1;
+    setTapData({ count: newCount, lastTime: now });
+  };
+
+  const handleFieldOneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (val === 'OVERRIDE_SYNDICATE') {
+      setCodeTriggered(true);
+      setFieldOne(''); // Clear backdoor text
+    } else {
+      setFieldOne(val);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,63 +98,25 @@ export default function GatewayPage() {
         />
 
         <div className="p-8 pt-6">
-          {/* Theme Toggle */}
-          <div className="flex items-center justify-end gap-3 mb-8">
-            <span
-              className="text-[10px] font-mono uppercase tracking-[0.2em]"
-              style={{
-                color: isPolice ? 'var(--accent-primary)' : 'var(--text-muted)',
-              }}
-            >
-              LVPD
-            </span>
-
-            <button
-              id="theme-toggle"
-              type="button"
-              onClick={toggleTheme}
-              className="relative w-10 h-5 cursor-pointer"
-              style={{
-                border: '1px solid var(--border-color)',
-                backgroundColor: 'transparent',
-              }}
-              aria-label="Toggle theme"
-            >
-              <div
-                className="absolute top-[2px] h-3 w-4 transition-all duration-200"
-                style={{
-                  backgroundColor: 'var(--accent-primary)',
-                  left: isPolice ? '2px' : 'calc(100% - 18px)',
-                }}
-              />
-            </button>
-
-            <span
-              className="text-[10px] font-mono uppercase tracking-[0.2em]"
-              style={{
-                color: !isPolice ? 'var(--accent-primary)' : 'var(--text-muted)',
-              }}
-            >
-              SYNDICATE
-            </span>
-          </div>
 
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-8 mt-2">
             <div className="flex items-center gap-3 mb-3">
-              {isPolice ? (
-                <Shield
-                  size={20}
-                  style={{ color: 'var(--accent-primary)' }}
-                  strokeWidth={2}
-                />
-              ) : (
-                <Terminal
-                  size={20}
-                  style={{ color: 'var(--accent-primary)' }}
-                  strokeWidth={2}
-                />
-              )}
+              <div onClick={handleIconClick} className="cursor-pointer" aria-hidden="true">
+                {isPolice ? (
+                  <Shield
+                    size={20}
+                    style={{ color: 'var(--accent-primary)' }}
+                    strokeWidth={2}
+                  />
+                ) : (
+                  <Terminal
+                    size={20}
+                    style={{ color: 'var(--accent-primary)' }}
+                    strokeWidth={2}
+                  />
+                )}
+              </div>
               <h1
                 className="text-sm font-mono font-bold uppercase tracking-[0.25em]"
                 style={{ color: 'var(--text-primary)' }}
@@ -129,10 +149,10 @@ export default function GatewayPage() {
                 id="field-one"
                 type="text"
                 value={fieldOne}
-                onChange={(e) => setFieldOne(e.target.value)}
+                onChange={handleFieldOneChange}
                 placeholder={isPolice ? 'Enter badge number' : 'Enter node address'}
                 autoComplete="off"
-                className="w-full bg-transparent text-sm font-mono py-2 px-0 outline-none"
+                className="w-full bg-transparent text-sm font-mono py-2 px-0 outline-none transition-colors duration-200"
                 style={{
                   color: 'var(--text-primary)',
                   borderBottom: '1px solid var(--accent-primary)',
@@ -160,7 +180,7 @@ export default function GatewayPage() {
                 onChange={(e) => setFieldTwo(e.target.value)}
                 placeholder={isPolice ? '••••••••••' : 'Key sequence'}
                 autoComplete="off"
-                className="w-full bg-transparent text-sm font-mono py-2 px-0 outline-none"
+                className="w-full bg-transparent text-sm font-mono py-2 px-0 outline-none transition-colors duration-200"
                 style={{
                   color: 'var(--text-primary)',
                   borderBottom: '1px solid var(--accent-primary)',
@@ -179,7 +199,7 @@ export default function GatewayPage() {
               className="w-full py-3 text-xs font-mono font-bold uppercase tracking-[0.3em] cursor-pointer transition-opacity duration-150 hover:opacity-80"
               style={{
                 backgroundColor: 'var(--accent-primary)',
-                color: isPolice ? '#020617' : '#ffffff',
+                color: isPolice ? '#020617' : '#000000',
                 border: 'none',
               }}
             >

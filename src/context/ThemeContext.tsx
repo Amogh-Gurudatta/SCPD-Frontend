@@ -7,12 +7,16 @@ type Theme = 'police' | 'mafia';
 interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
+  setTheme: (theme: Theme) => void;
+  mafiaSession: boolean;
+  setMafiaSession: (val: boolean) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('police');
+  const [mafiaSession, setMafiaSession] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -20,6 +24,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const savedTheme = localStorage.getItem('scpd-theme') as Theme | null;
     if (savedTheme === 'police' || savedTheme === 'mafia') {
       setTheme(savedTheme);
+    }
+    const savedSession = localStorage.getItem('scpd-mafia-session');
+    if (savedSession === 'true') {
+      setMafiaSession(true);
     }
   }, []);
 
@@ -31,12 +39,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     document.documentElement.classList.add(theme);
   }, [theme, mounted]);
 
+  useEffect(() => {
+    if (!mounted) return;
+    localStorage.setItem('scpd-mafia-session', String(mafiaSession));
+  }, [mafiaSession, mounted]);
+
   const toggleTheme = () => {
     setTheme((prev) => (prev === 'police' ? 'mafia' : 'police'));
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, mafiaSession, setMafiaSession }}>
       {children}
     </ThemeContext.Provider>
   );
