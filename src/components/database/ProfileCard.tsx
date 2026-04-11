@@ -1,8 +1,10 @@
 'use client';
 
 import { useTheme } from '@/context/ThemeContext';
+import { useData } from '@/context/DataContext';
 import { type ProfileData } from '@/lib/profileData';
-import { User } from 'lucide-react';
+import { User, Archive, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface ProfileCardProps {
   profile: ProfileData;
@@ -10,6 +12,7 @@ interface ProfileCardProps {
 
 export default function ProfileCard({ profile }: ProfileCardProps) {
   const { theme } = useTheme();
+  const { deleteProfile } = useData();
   const isPolice = theme === 'police';
 
   const name = isPolice ? profile.policeName : profile.mafiaName;
@@ -17,13 +20,22 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
   const threat = isPolice ? profile.policeThreat : profile.mafiaThreat;
   const notes = isPolice ? profile.policeNotes : profile.mafiaNotes;
 
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteProfile(profile.id);
+    toast.error(isPolice ? 'RECORD ARCHIVED' : 'DATA PURGED', {
+      description: `Subject ${profile.id} has been removed from active database.`,
+      className: 'font-mono uppercase text-xs',
+    });
+  };
+
   // Determine indicator colors based on threat or status (depending on your logic, keeping it simple: use accent for active/critical)
   // For Police, WANTED might be accent. For Mafia, ONLINE might be accent.
   const isHighAlert = status === 'WANTED' || status === 'BURNED' || status === 'COMPROMISED';
 
   return (
     <div
-      className="flex flex-col p-5 group cursor-pointer transition-colors duration-200"
+      className="flex flex-col p-5 group cursor-pointer transition-all duration-200 relative overflow-hidden"
       style={{
         backgroundColor: 'var(--bg-surface)',
         border: '1px solid var(--border-color)',
@@ -35,6 +47,15 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
         e.currentTarget.style.borderColor = 'var(--border-color)';
       }}
     >
+      {/* Archive Button Overlay */}
+      <button
+        onClick={handleDelete}
+        className="absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 transition-opacity bg-red-900/20 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/50 z-10"
+        title={isPolice ? "Archive Record" : "Purge Data"}
+      >
+        {isPolice ? <Archive size={14} /> : <Trash2 size={14} />}
+      </button>
+
       <div className="flex items-start justify-between mb-4">
         <div className="flex gap-4 items-center">
           {/* Mugshot Placeholder */}

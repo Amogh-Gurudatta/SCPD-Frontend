@@ -1,7 +1,9 @@
 'use client';
 
 import { useTheme } from '@/context/ThemeContext';
-import { Search } from 'lucide-react';
+import { useData } from '@/context/DataContext';
+import { Search, Plus, UserPlus } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface FilterBarProps {
   query: string;
@@ -21,7 +23,29 @@ export default function FilterBar({
   setThreatFilter,
 }: FilterBarProps) {
   const { theme } = useTheme();
+  const { addProfile } = useData();
   const isPolice = theme === 'police';
+
+  const handleAdd = () => {
+    const id = `ID-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
+    const newProfile = {
+      id,
+      policeName: `Suspect_${id.split('-')[1]}`,
+      mafiaName: `Target_${id.split('-')[1]}`,
+      policeStatus: isPolice ? 'WANTED' : 'ACTIVE',
+      mafiaStatus: isPolice ? 'ONLINE' : 'COMPROMISED',
+      policeThreat: 'MEDIUM',
+      mafiaThreat: 'HIGH',
+      policeNotes: 'Newly initialized entry. Awaiting field investigation.',
+      mafiaNotes: 'Fresh link established. Monitoring uplink nodes.',
+    };
+    
+    addProfile(newProfile);
+    toast.success(isPolice ? 'NEW ENTRY CREATED' : 'NODE ADDED', {
+      description: `Identifier ${id} registered to active database.`,
+      className: 'font-mono uppercase text-xs',
+    });
+  };
 
   return (
     <div
@@ -33,28 +57,42 @@ export default function FilterBar({
         borderBottom: '1px solid var(--border-color)',
       }}
     >
-      <div className="flex flex-col md:flex-row gap-4 max-w-7xl mx-auto items-center">
-        {/* Search Input */}
-        <div className="relative flex-1 w-full">
-          <Search
-            size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2"
-            style={{ color: 'var(--text-muted)' }}
-          />
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={isPolice ? 'Search Suspects by Name...' : 'Search Targets by Alias...'}
-            className="w-full pl-10 pr-4 py-2 text-sm font-mono outline-none transition-colors duration-200"
+      <div className="flex flex-col lg:flex-row gap-4 max-w-7xl mx-auto items-center">
+        {/* Search Input & Add Button */}
+        <div className="flex gap-3 flex-1 w-full">
+          <div className="relative flex-1">
+            <Search
+              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2"
+              style={{ color: 'var(--text-muted)' }}
+            />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={isPolice ? 'Search Suspects...' : 'Search Targets...'}
+              className="w-full pl-10 pr-4 py-2 text-sm font-mono outline-none transition-colors duration-200"
+              style={{
+                backgroundColor: 'transparent',
+                color: 'var(--text-primary)',
+                border: '1px solid var(--border-color)',
+              }}
+              onFocus={(e) => (e.target.style.borderColor = 'var(--accent-primary)')}
+              onBlur={(e) => (e.target.style.borderColor = 'var(--border-color)')}
+            />
+          </div>
+          
+          <button
+            onClick={handleAdd}
+            className="flex items-center gap-2 px-4 py-2 text-[10px] font-mono font-bold uppercase tracking-widest transition-all hover:bg-[var(--accent-primary)] hover:text-black shrink-0"
             style={{
-              backgroundColor: 'transparent',
-              color: 'var(--text-primary)',
-              border: '1px solid var(--border-color)',
+              border: '1px solid var(--accent-primary)',
+              color: 'var(--accent-primary)',
             }}
-            onFocus={(e) => (e.target.style.borderColor = 'var(--accent-primary)')}
-            onBlur={(e) => (e.target.style.borderColor = 'var(--border-color)')}
-          />
+          >
+            {isPolice ? <UserPlus size={14} /> : <Plus size={14} />}
+            <span className="hidden sm:inline">{isPolice ? 'Add Record' : 'Inject Node'}</span>
+          </button>
         </div>
 
         {/* Status Dropdown */}

@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
+import { useData } from '@/context/DataContext';
 import DocumentForm from '@/components/generator/DocumentForm';
 import LivePreview from '@/components/generator/LivePreview';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
+import { toast } from 'sonner';
 
 export default function GeneratorPage() {
   const [targetId, setTargetId] = useState('');
@@ -14,6 +16,7 @@ export default function GeneratorPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { theme } = useTheme();
+  const { updateProfileStatus, addWarrant } = useData();
   const isPolice = theme === 'police';
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -22,6 +25,22 @@ export default function GeneratorPage() {
 
     // Trigger the Juiced Progress State
     setIsSubmitting(true);
+
+    // Global State Update
+    updateProfileStatus(targetId, isPolice ? 'WANTED' : 'ACTIVE', isPolice ? 'ONLINE' : 'BURNED');
+    addWarrant({
+      id: `W-${Math.floor(Math.random() * 10000)}`,
+      targetId,
+      timestamp: new Date().toISOString(),
+      urgency,
+      justification,
+      type: isPolice ? 'WARRANT' : 'BURN',
+    });
+
+    toast.success(isPolice ? 'TRANSMISSION SUCCESSFUL' : 'BURN ORDER PROTOCOL ACTIVE', {
+      description: `Target ID ${targetId} has been flagged globally.`,
+      className: 'font-mono uppercase text-xs',
+    });
 
     // Audio cue "juice" using Web Audio API (so no external assets needed)
     try {

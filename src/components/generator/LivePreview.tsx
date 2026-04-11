@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { MOCK_PROFILES } from '@/lib/profileData';
+import { motion } from 'framer-motion';
 
 interface LivePreviewProps {
   targetId: string;
@@ -140,12 +141,21 @@ export default function LivePreview({
             <span className="uppercase font-mono tracking-widest text-[var(--text-muted)] block mb-[2%]" style={{ fontSize: '0.7em' }}>
               {isPolice ? 'Incident Justification:' : 'Rationale:'}
             </span>
-            <p
+            <motion.p
+              key={justification}
+              initial={{ opacity: 0.5, filter: 'blur(2px)' }}
+              animate={{ opacity: 1, filter: 'blur(0px)' }}
+              transition={{ duration: 0.1, ease: 'linear' }}
               className="font-mono leading-relaxed text-[var(--text-primary)] whitespace-pre-wrap"
               style={{ fontSize: '0.9em' }}
             >
               {justification || (isPolice ? '[Enter warrant justification notes here...]' : '[Enter operational rationale here...]')}
-            </p>
+              <motion.span
+                animate={{ opacity: [1, 0, 1] }}
+                transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
+                className="ml-1 inline-block w-2 h-4 align-middle bg-[var(--accent-primary)]"
+              />
+            </motion.p>
           </div>
 
           <style>{`

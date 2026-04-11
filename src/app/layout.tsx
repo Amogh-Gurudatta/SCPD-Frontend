@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { ThemeProvider } from '@/context/ThemeContext';
+import { DataProvider } from '@/context/DataContext';
+import { Toaster } from 'sonner';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -19,7 +21,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.className} min-h-screen antialiased`}>
         <ThemeProvider>
-          {children}
+          <DataProvider>
+            {children}
+            <Toaster position="top-right" theme="dark" />
+          </DataProvider>
         </ThemeProvider>
       </body>
     </html>
