@@ -1,37 +1,56 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-:root {
-  /* Core Palette - Noir & Neon */
-  --background: #050505;
-  --foreground: #ffffff;
-  
-  --scarlet: #E63946;
-  --neon-yellow: #FFEE32;
-  --cyber-cyan: #00B4D8;
-  --noir-deep: #0a0a0a;
-  --noir-surface: #121212;
-  
-  --font-heading: 'Inter', system-ui, sans-serif;
+@theme {
+  --color-base: var(--bg-base);
+  --color-surface: var(--bg-surface);
+  --color-primary: var(--text-primary);
+  --color-muted: var(--text-muted);
+  --color-border: var(--border-color);
+  --color-accent: var(--accent-primary);
+  --color-accent-secondary: var(--accent-secondary);
 }
 
 @layer base {
-  body {
-    background: var(--background);
-    color: var(--foreground);
-    @apply antialiased selection:bg-red-500 selection:text-white;
+  :root,
+  .police {
+    /* LVPD (Police Mode) - High-tech, structured military/surveillance UI */
+    --bg-base: #020617; /* slate-950 */
+    --bg-surface: rgba(15, 23, 42, 0.7); /* slate-900 frosted */
+    --text-primary: #ffffff;
+    --text-muted: #94a3b8; /* slate-400 */
+    --border-color: #334155; /* slate-700 */
+    --accent-primary: #22d3ee; /* cyan-400 */
+    --accent-secondary: #fbbf24; /* amber-400 */
   }
-}
 
-@layer components {
-  .neon-text-red {
-    text-shadow: 0 0 10px rgba(230, 57, 70, 0.7), 0 0 20px rgba(230, 57, 70, 0.5);
+  .mafia {
+    /* The Syndicate (Mafia Mode) - Brutalist, underground terminal */
+    --bg-base: #000000;
+    --bg-surface: rgba(10, 10, 10, 0.9);
+    --text-primary: #e5e5e5; /* neutral-200 */
+    --text-muted: #737373; /* neutral-500 */
+    --border-color: #262626; /* neutral-800 */
+    --accent-primary: #dc2626; /* red-600 */
+    --accent-secondary: #000000;
   }
-  
-  .glass-card {
-    background: rgba(18, 18, 18, 0.8);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+  }
+
+  /* Scanline/Grid effect strictly for The Syndicate (.mafia) */
+  .mafia body {
+    background-image: linear-gradient(
+        rgba(220, 38, 38, 0.05) 1px,
+        transparent 1px
+      ),
+      linear-gradient(90deg, rgba(220, 38, 38, 0.05) 1px, transparent 1px);
+    background-size: 24px 24px;
+    background-position: center center;
   }
 }
