@@ -90,8 +90,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [warrantLog, setWarrantLog] = useState<WarrantEntry[]>([]);
   const [incidents, setIncidents] = useState<IncidentData[]>([]);
 
-  // Internal API Fetch helper that attaches JWT and handles 401s
-  const apiFetch = useCallback(async (endpoint: string, options: RequestInit = {}) => {
+  // Internal API Fetch helper that attaches JWT and handles 401s + Token Refresh
+  const apiFetch = useCallback(async (endpoint: string, options: RequestInit = {}, isRetry = false): Promise<Response> => {
     const token = localStorage.getItem('access');
     const headers = new Headers(options.headers || {});
     
@@ -103,7 +103,40 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
     const response = await fetch(`${apiUrl}${endpoint}`, { ...options, headers });
 
+    // Handle 401 (Unauthorized) errors
     if (response.status === 401) {
+      // If we already tried refreshing once and still got a 401, give up
+      if (isRetry) {
+        localStorage.removeItem('access');
+        localStorage.removeItem('refresh');
+        router.replace('/');
+        throw new Error('Unauthorized');
+      }
+
+      // Attempt to refresh the token
+      const refresh = localStorage.getItem('refresh');
+      if (refresh) {
+        try {
+          const refreshRes = await fetch(`${apiUrl}/token/refresh/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh: localStorage.getItem('refresh') }),
+          });
+
+          if (refreshRes.ok) {
+            const data = await refreshRes.json();
+            // Store the new access token
+            localStorage.setItem('access', data.access);
+            
+            // Retry the original request with isRetry set to true
+            return apiFetch(endpoint, options, true);
+          }
+        } catch (error) {
+          console.error('Token refresh execution failed:', error);
+        }
+      }
+
+      // If no refresh token or refresh failed, purge session
       localStorage.removeItem('access');
       localStorage.removeItem('refresh');
       router.replace('/');
