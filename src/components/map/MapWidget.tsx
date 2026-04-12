@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
-import { MapContainer, TileLayer, CircleMarker, Polyline, Tooltip, useMap } from 'react-leaflet';
+import { useEffect } from 'react';
+import { MapContainer, TileLayer, CircleMarker, Tooltip, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useData } from '@/context/DataContext';
 import { type MapNode } from '@/lib/mockData';
@@ -37,15 +37,6 @@ export default function MapWidget({
   
   // Las Vegas center
   const initialCenter: [number, number] = [36.1716, -115.1391];
-  const policeHQ: [number, number] = [36.1699, -115.1420];
-
-  // Derive the 3 most recent incidents for tactical dispatch lines
-  const activeDispatches = useMemo(() => {
-    return [...incidents]
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-      .slice(0, 3);
-  }, [incidents]);
-
   return (
     <div className="absolute inset-0 w-full h-full bg-black z-0">
       <MapContainer
@@ -61,21 +52,6 @@ export default function MapWidget({
         />
 
         <MapController activeNode={activeNode} />
-
-        {/* Tactical Dispatch Lines (HQ to Targets) */}
-        {activeDispatches.map((dest) => (
-          <Polyline
-            key={`dispatch-${dest.id}`}
-            positions={[policeHQ, [dest.lat, dest.lng]]}
-            pathOptions={{
-              color: accentColor,
-              weight: 1.5,
-              dashArray: '10, 10',
-              opacity: 0.6,
-              className: 'animate-pulse' // Adding pulsed effect via CSS if possible, or standard opacity shift
-            }}
-          />
-        ))}
 
         {incidents.map((node) => {
           const isActive = activeNode?.id === node.id;
