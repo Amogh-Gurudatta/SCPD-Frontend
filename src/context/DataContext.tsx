@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { type ProfileData } from '@/lib/profileData';
+import { useTheme } from '@/context/ThemeContext';
 
 export interface WarrantEntry {
   id: string;
@@ -15,12 +16,10 @@ export interface WarrantEntry {
 
 export interface IncidentData {
   id: string;
-  lat: number;
-  lng: number;
-  policeTitle: string;
-  mafiaTitle: string;
-  status: 'CRITICAL' | 'ACTIVE' | 'STANDBY';
-  timestamp: string;
+  title?: string;
+  description?: string;
+  timestamp?: string;
+  [key: string]: any;
 }
 
 interface DataContextType {
@@ -35,10 +34,9 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-// Helpers to map between Django snake_case JSON and frontend camelCase shapes
 function mapSuspectToFrontend(data: any): ProfileData {
   return {
-    id: String(data.id),
+    id: data.id,
     policeName: data.police_name || '',
     mafiaName: data.mafia_name || '',
     policeStatus: data.police_status || 'ACTIVE',
@@ -64,20 +62,19 @@ function mapSuspectToBackend(data: Partial<ProfileData>): any {
   };
 }
 
+// FIXED: Properly reads type_warrant from the Django backend
 function mapWarrantToFrontend(data: any): WarrantEntry {
-  // Support both new 'type_warrant' and legacy 'type' keys from the backend data stream
-  const rawType = data.type_warrant || data.type || 'WARRANT';
-  
   return {
-    id: String(data.id),
-    targetId: data.target_id ? String(data.target_id) : '',
+    id: data.id,
+    targetId: data.target_id || '',
     timestamp: data.timestamp || new Date().toISOString(),
     urgency: data.urgency || 0,
     justification: data.justification || '',
-    type: rawType as 'WARRANT' | 'BURN',
+    type: data.type_warrant || data.type || 'WARRANT',
   };
 }
 
+// FIXED: Properly formats type_warrant for the Django backend
 function mapWarrantToBackend(data: Partial<WarrantEntry>): any {
   return {
     ...(data.id && { id: data.id }),
@@ -85,34 +82,21 @@ function mapWarrantToBackend(data: Partial<WarrantEntry>): any {
     ...(data.timestamp && { timestamp: data.timestamp }),
     ...(typeof data.urgency !== 'undefined' && { urgency: data.urgency }),
     ...(data.justification && { justification: data.justification }),
-    // Mirror both for backend compatibility
-    ...(data.type && { type_warrant: data.type, type: data.type }),
-  };
-}
-
-function mapIncidentToFrontend(data: any): IncidentData {
-  return {
-    id: String(data.id),
-    lat: Number(data.lat) || 0,
-    lng: Number(data.lng) || 0,
-    policeTitle: data.police_title || data.title || 'Unknown Incident',
-    mafiaTitle: data.mafia_title || data.title || 'Unknown Operation',
-    status: data.status || 'STANDBY',
-    timestamp: data.timestamp || new Date().toISOString(),
+    ...(data.type && { type_warrant: data.type }),
   };
 }
 
 export function DataProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const { theme } = useTheme(); // Pull in the current UI theme
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [warrantLog, setWarrantLog] = useState<WarrantEntry[]>([]);
   const [incidents, setIncidents] = useState<IncidentData[]>([]);
 
-  // Internal API Fetch helper that attaches JWT and handles 401s + Token Refresh
   const apiFetch = useCallback(async (endpoint: string, options: RequestInit = {}, isRetry = false): Promise<Response> => {
     const token = localStorage.getItem('access');
     const headers = new Headers(options.headers || {});
-    
+
     if (token) {
       headers.set('Authorization', `Bearer ${token}`);
     }
@@ -121,9 +105,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
     const response = await fetch(`${apiUrl}${endpoint}`, { ...options, headers });
 
-    // Handle 401 (Unauthorized) errors
     if (response.status === 401) {
-      // If we already tried refreshing once and still got a 401, give up
       if (isRetry) {
         localStorage.removeItem('access');
         localStorage.removeItem('refresh');
@@ -131,7 +113,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
         throw new Error('Unauthorized');
       }
 
-      // Attempt to refresh the token
       const refresh = localStorage.getItem('refresh');
       if (refresh) {
         try {
@@ -143,10 +124,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
           if (refreshRes.ok) {
             const data = await refreshRes.json();
-            // Store the new access token
             localStorage.setItem('access', data.access);
-            
-            // Retry the original request with isRetry set to true
             return apiFetch(endpoint, options, true);
           }
         } catch (error) {
@@ -154,7 +132,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // If no refresh token or refresh failed, purge session
       localStorage.removeItem('access');
       localStorage.removeItem('refresh');
       router.replace('/');
@@ -164,10 +141,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return response;
   }, [router]);
 
-  // Centralized data refresh logic
   const refreshData = useCallback(async () => {
     try {
-      // Parallel fetching
       const [criminalsRes, warrantsRes, incidentsRes] = await Promise.all([
         apiFetch('/criminals/').catch(() => null),
         apiFetch('/warrants/').catch(() => null),
@@ -181,29 +156,39 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
       if (warrantsRes?.ok) {
         const data = await warrantsRes.json();
-        setWarrantLog(Array.isArray(data) ? data.map(mapWarrantToFrontend).reverse() : []);
+        if (Array.isArray(data)) {
+          let mapped = data.map(mapWarrantToFrontend);
+
+          // STRICT FRONTEND SANDBOXING: Enforce UI visual separation 
+          // regardless of the user's permanent backend group state.
+          if (theme === 'police') {
+            mapped = mapped.filter(w => w.type === 'WARRANT');
+          } else if (theme === 'mafia') {
+            mapped = mapped.filter(w => w.type === 'BURN');
+          }
+
+          // Sort chronologically (newest first)
+          setWarrantLog(mapped.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()));
+        } else {
+          setWarrantLog([]);
+        }
       }
 
       if (incidentsRes?.ok) {
         const data = await incidentsRes.json();
-        setIncidents(Array.isArray(data) ? data.map(mapIncidentToFrontend) : []);
+        setIncidents(Array.isArray(data) ? data : []);
       }
     } catch (error) {
       console.error('Data refresh cycle failed:', error);
     }
-  }, [apiFetch]);
+  }, [apiFetch, theme]); // Re-run data filter when theme swaps
 
-  // Establish initial load and polling heart-rate
   useEffect(() => {
     const hasToken = typeof window !== 'undefined' && localStorage.getItem('access');
-    
+
     if (hasToken) {
-      // Initial trigger
       refreshData();
-
-      // Aggressive 5s polling for tactical demo responsiveness
       const intervalId = setInterval(refreshData, 5000);
-
       return () => clearInterval(intervalId);
     }
   }, [refreshData]);
@@ -267,22 +252,28 @@ export function DataProvider({ children }: { children: ReactNode }) {
       });
       if (res.ok || res.status === 201) {
         const savedData = await res.json();
-        setWarrantLog((prev) => [mapWarrantToFrontend(savedData), ...prev]);
+        const mapped = mapWarrantToFrontend(savedData);
 
-        // Action consequences
-        if (entry.type === 'BURN') {
-          await deleteProfile(entry.targetId);
-        } else if (entry.type === 'WARRANT') {
-          const target = profiles.find((p) => p.id === entry.targetId);
+        // Only insert into UI immediately if it belongs in this theme
+        if ((theme === 'police' && mapped.type === 'WARRANT') ||
+          (theme === 'mafia' && mapped.type === 'BURN')) {
+          setWarrantLog((prev) => [mapped, ...prev]);
+        }
+
+        // TACTICAL CONSEQUENCES
+        if (mapped.type === 'BURN') {
+          await deleteProfile(mapped.targetId);
+        } else if (mapped.type === 'WARRANT') {
+          const target = profiles.find(p => p.id === mapped.targetId);
           if (target) {
-            await updateProfileStatus(entry.targetId, 'CUSTODY', target.mafiaStatus);
+            await updateProfileStatus(mapped.targetId, 'CUSTODY', target.mafiaStatus);
           }
         }
       }
     } catch (e) {
       console.error('addWarrant failed', e);
     }
-  }, [apiFetch, deleteProfile, updateProfileStatus, profiles]);
+  }, [apiFetch, theme, deleteProfile, updateProfileStatus, profiles]);
 
   return (
     <DataContext.Provider
