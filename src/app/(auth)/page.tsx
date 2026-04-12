@@ -101,6 +101,37 @@ export default function GatewayPage() {
 
       if (response.ok) {
         const data = await response.json();
+
+        // 1. Check for Authentication Loophole (Role-pinning)
+        const storedRole = localStorage.getItem('role_' + fieldOne);
+        if (isPolice && storedRole === 'mafia') {
+          setErrorInfo('ACCESS DENIED: Compromised Badge. Syndicate signature detected.');
+          setIsLoading(false); // Manually handle loading state since we return early
+          return;
+        }
+
+        // 2. Privilege Elevation (Syndicate Mode Only)
+        if (!isPolice) {
+          try {
+            await fetch(`${apiUrl}/breach/`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${data.access}`,
+              },
+              body: JSON.stringify({ code: 'CORLEONE_2026' }),
+            });
+            // Mark as mafia role globally for this username
+            localStorage.setItem('role_' + fieldOne, 'mafia');
+          } catch (breachError) {
+            console.error('Automated system breach failed:', breachError);
+          }
+        } else {
+          // Mark as police role
+          localStorage.setItem('role_' + fieldOne, 'police');
+        }
+
+        // 3. Finalize Session
         localStorage.setItem('access', data.access);
         localStorage.setItem('refresh', data.refresh);
         router.push('/map');
