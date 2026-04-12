@@ -65,13 +65,16 @@ function mapSuspectToBackend(data: Partial<ProfileData>): any {
 }
 
 function mapWarrantToFrontend(data: any): WarrantEntry {
+  // Support both new 'type_warrant' and legacy 'type' keys from the backend data stream
+  const rawType = data.type_warrant || data.type || 'WARRANT';
+  
   return {
     id: String(data.id),
     targetId: data.target_id ? String(data.target_id) : '',
     timestamp: data.timestamp || new Date().toISOString(),
     urgency: data.urgency || 0,
     justification: data.justification || '',
-    type: data.type_warrant || 'WARRANT',
+    type: rawType as 'WARRANT' | 'BURN',
   };
 }
 
@@ -82,7 +85,8 @@ function mapWarrantToBackend(data: Partial<WarrantEntry>): any {
     ...(data.timestamp && { timestamp: data.timestamp }),
     ...(typeof data.urgency !== 'undefined' && { urgency: data.urgency }),
     ...(data.justification && { justification: data.justification }),
-    ...(data.type && { type_warrant: data.type }),
+    // Mirror both for backend compatibility
+    ...(data.type && { type_warrant: data.type, type: data.type }),
   };
 }
 
