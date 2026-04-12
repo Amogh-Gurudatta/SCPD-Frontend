@@ -36,7 +36,7 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 // Helpers to map between Django snake_case JSON and frontend camelCase shapes
 function mapSuspectToFrontend(data: any): ProfileData {
   return {
-    id: data.id,
+    id: String(data.id),
     policeName: data.police_name || '',
     mafiaName: data.mafia_name || '',
     policeStatus: data.police_status || 'ACTIVE',
@@ -64,12 +64,12 @@ function mapSuspectToBackend(data: Partial<ProfileData>): any {
 
 function mapWarrantToFrontend(data: any): WarrantEntry {
   return {
-    id: data.id,
-    targetId: data.target_id || '',
+    id: String(data.id),
+    targetId: data.target_id ? String(data.target_id) : '',
     timestamp: data.timestamp || new Date().toISOString(),
     urgency: data.urgency || 0,
     justification: data.justification || '',
-    type: data.type || 'WARRANT',
+    type: data.type_warrant || 'WARRANT',
   };
 }
 
@@ -80,7 +80,7 @@ function mapWarrantToBackend(data: Partial<WarrantEntry>): any {
     ...(data.timestamp && { timestamp: data.timestamp }),
     ...(typeof data.urgency !== 'undefined' && { urgency: data.urgency }),
     ...(data.justification && { justification: data.justification }),
-    ...(data.type && { type: data.type }),
+    ...(data.type && { type_warrant: data.type }),
   };
 }
 
@@ -250,11 +250,21 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (res.ok || res.status === 201) {
         const savedData = await res.json();
         setWarrantLog((prev) => [mapWarrantToFrontend(savedData), ...prev]);
+
+        // Action consequences
+        if (entry.type === 'BURN') {
+          await deleteProfile(entry.targetId);
+        } else if (entry.type === 'WARRANT') {
+          const target = profiles.find((p) => p.id === entry.targetId);
+          if (target) {
+            await updateProfileStatus(entry.targetId, 'CUSTODY', target.mafiaStatus);
+          }
+        }
       }
     } catch (e) {
       console.error('addWarrant failed', e);
     }
-  }, [apiFetch]);
+  }, [apiFetch, deleteProfile, updateProfileStatus, profiles]);
 
   return (
     <DataContext.Provider
