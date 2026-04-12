@@ -15,10 +15,12 @@ export interface WarrantEntry {
 
 export interface IncidentData {
   id: string;
-  title?: string;
-  description?: string;
-  timestamp?: string;
-  [key: string]: any; // Fallback for unknown incident fields
+  lat: number;
+  lng: number;
+  policeTitle: string;
+  mafiaTitle: string;
+  status: 'CRITICAL' | 'ACTIVE' | 'STANDBY';
+  timestamp: string;
 }
 
 interface DataContextType {
@@ -81,6 +83,18 @@ function mapWarrantToBackend(data: Partial<WarrantEntry>): any {
     ...(typeof data.urgency !== 'undefined' && { urgency: data.urgency }),
     ...(data.justification && { justification: data.justification }),
     ...(data.type && { type_warrant: data.type }),
+  };
+}
+
+function mapIncidentToFrontend(data: any): IncidentData {
+  return {
+    id: String(data.id),
+    lat: Number(data.lat) || 0,
+    lng: Number(data.lng) || 0,
+    policeTitle: data.police_title || data.title || 'Unknown Incident',
+    mafiaTitle: data.mafia_title || data.title || 'Unknown Operation',
+    status: data.status || 'STANDBY',
+    timestamp: data.timestamp || new Date().toISOString(),
   };
 }
 
@@ -168,7 +182,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
       if (incidentsRes?.ok) {
         const data = await incidentsRes.json();
-        setIncidents(Array.isArray(data) ? data : []);
+        setIncidents(Array.isArray(data) ? data.map(mapIncidentToFrontend) : []);
       }
     } catch (error) {
       console.error('Data refresh cycle failed:', error);

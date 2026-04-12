@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
-import { MOCK_NODES, type MapNode } from '@/lib/mockData';
+import { useData } from '@/context/DataContext';
+import { type MapNode } from '@/lib/mockData';
 import { Crosshair, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface IncidentFeedProps {
@@ -15,6 +16,7 @@ export default function IncidentFeed({
   activeId,
 }: IncidentFeedProps) {
   const { theme } = useTheme();
+  const { incidents } = useData();
   const [isExpanded, setIsExpanded] = useState(false);
   const isPolice = theme === 'police';
 
@@ -58,13 +60,13 @@ export default function IncidentFeed({
       </div>
 
       <div className={`overflow-y-auto flex-1 p-2 space-y-2 md:block ${isExpanded ? 'block' : 'hidden'}`}>
-        {MOCK_NODES.map((node) => {
+        {incidents.map((node) => {
           const isActive = activeId === node.id;
 
           return (
             <button
               key={node.id}
-              onClick={() => onSelectNode(node)}
+              onClick={() => onSelectNode(node as unknown as MapNode)}
               className="w-full text-left p-3 cursor-pointer transition-all duration-200"
               style={{
                 border: isActive
