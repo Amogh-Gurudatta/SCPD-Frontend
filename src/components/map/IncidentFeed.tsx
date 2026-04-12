@@ -90,21 +90,21 @@ export default function IncidentFeed({
                   className="text-[9px] font-mono uppercase tracking-widest px-1.5 py-0.5"
                   style={{
                     backgroundColor:
-                      node.status === 'CRITICAL'
+                      node.severity >= 8 // Uses the 1-10 severity scale from Django
                         ? 'color-mix(in srgb, var(--accent-primary) 15%, transparent)'
                         : 'transparent',
-                    color: node.status === 'CRITICAL' ? 'var(--accent-primary)' : 'var(--text-muted)',
-                    border: node.status === 'CRITICAL' ? '1px solid var(--accent-primary)' : '1px solid var(--border-color)',
+                    color: node.severity >= 8 ? 'var(--accent-primary)' : 'var(--text-muted)',
+                    border: node.severity >= 8 ? '1px solid var(--accent-primary)' : '1px solid var(--border-color)',
                   }}
                 >
-                  {node.status}
+                  {node.incident_type || 'ACTIVE'}
                 </span>
               </div>
               <p
                 className="text-xs font-mono uppercase tracking-wide leading-tight"
                 style={{ color: 'var(--text-primary)' }}
               >
-                {isPolice ? node.policeTitle : node.mafiaTitle}
+                {node.title}
               </p>
             </button>
           );
