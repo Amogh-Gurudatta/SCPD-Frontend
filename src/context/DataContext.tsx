@@ -36,7 +36,7 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 
 function mapSuspectToFrontend(data: any): ProfileData {
   return {
-    id: data.id,
+    id: String(data.id),
     policeName: data.police_name || '',
     mafiaName: data.mafia_name || '',
     policeStatus: data.police_status || 'ACTIVE',
