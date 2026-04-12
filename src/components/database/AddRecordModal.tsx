@@ -217,14 +217,14 @@ export default function AddRecordModal({ isOpen, onClose }: AddRecordModalProps)
                   <button
                     type="button"
                     onClick={onClose}
-                    className="px-6 py-2 border border-(--border-color) font-mono text-[10px] uppercase font-bold hover:bg-white/10 transition-colors"
+                    className="px-6 py-2 border border-(--border-color) font-mono text-[10px] uppercase font-bold hover:bg-white/10 transition-colors cursor-pointer"
                   >
                     Terminate
                   </button>
                   <button
                     type="submit"
                     disabled={isSaving}
-                    className="px-6 py-2 bg-(--accent-primary) text-black font-mono text-[10px] uppercase font-bold flex items-center gap-2 hover:opacity-90 transition-opacity"
+                    className="px-6 py-2 bg-(--accent-primary) text-black font-mono text-[10px] uppercase font-bold flex items-center gap-2 hover:opacity-90 transition-opacity cursor-pointer disabled:cursor-not-allowed"
                   >
                     <Save size={14} />
                     {isSaving ? 'Saving...' : isPolice ? 'Commit to Database' : 'Initialize Node'}
