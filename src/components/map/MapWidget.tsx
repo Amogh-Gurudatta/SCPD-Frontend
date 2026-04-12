@@ -12,7 +12,7 @@ function MapController({ activeNode }: { activeNode: MapNode | null }) {
 
   useEffect(() => {
     if (activeNode) {
-      map.flyTo([activeNode.lat, activeNode.lng], 15, {
+      map.flyTo([activeNode.latitude, activeNode.longitude], 15, {
         duration: 1.5,
         easeLinearity: 0.25,
       });
