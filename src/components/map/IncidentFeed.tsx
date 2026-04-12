@@ -84,7 +84,7 @@ export default function IncidentFeed({
                     color: isActive ? 'var(--accent-primary)' : 'var(--text-muted)',
                   }}
                 >
-                  {node.id.toUpperCase()}
+                  {String(node.id).toUpperCase()}
                 </span>
                 <span
                   className="text-[9px] font-mono uppercase tracking-widest px-1.5 py-0.5"
