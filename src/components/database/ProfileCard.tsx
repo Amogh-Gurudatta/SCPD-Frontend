@@ -21,13 +21,20 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
   const threat = isPolice ? profile.policeThreat : profile.mafiaThreat;
   const notes = isPolice ? profile.policeNotes : profile.mafiaNotes;
 
-  const handleDelete = (e: React.MouseEvent) => {
+  const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    deleteProfile(profile.id);
-    toast.error(isPolice ? 'RECORD DELETED' : 'NODE TERMINATED', {
-      description: `Identifier ${profile.id} has been purged from active database.`,
-      className: 'font-mono uppercase text-xs',
-    });
+    try {
+      await deleteProfile(profile.id);
+      toast.error(isPolice ? 'RECORD DELETED' : 'NODE TERMINATED', {
+        description: `Identifier ${profile.id} has been purged from active database.`,
+        className: 'font-mono uppercase text-xs',
+      });
+    } catch (err) {
+      toast.error('DELETION FAILED', {
+        description: 'Insufficient permissions or connection error.',
+        className: 'font-mono uppercase text-xs',
+      });
+    }
   };
 
   // Determine indicator colors based on threat or status (depending on your logic, keeping it simple: use accent for active/critical)

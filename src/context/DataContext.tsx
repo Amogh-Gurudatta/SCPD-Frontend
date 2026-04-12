@@ -210,16 +210,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [apiFetch]);
 
   const deleteProfile = useCallback(async (id: string) => {
-    try {
-      const res = await apiFetch(`/criminals/${id}/`, {
-        method: 'DELETE',
-      });
-      if (res.ok || res.status === 204) {
-        setProfiles((prev) => prev.filter((p) => p.id !== id));
-      }
-    } catch (e) {
-      console.error('deleteProfile failed', e);
+    const res = await apiFetch(`/criminals/${id}/`, {
+      method: 'DELETE',
+    });
+
+    if (!res.ok && res.status !== 204) {
+      throw new Error(`Delete failed: ${res.status}`);
     }
+
+    setProfiles((prev) => prev.filter((p) => String(p.id) !== String(id)));
   }, [apiFetch]);
 
   const updateProfileStatus = useCallback(async (id: string, policeStatus: ProfileData['policeStatus'], mafiaStatus: ProfileData['mafiaStatus']) => {

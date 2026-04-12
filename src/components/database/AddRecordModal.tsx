@@ -36,37 +36,50 @@ export default function AddRecordModal({ isOpen, onClose }: AddRecordModalProps)
     notes: '',
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSubmit: React.SubmitEventHandler<HTMLFormElement> = async (e) => {
     e.preventDefault();
-    const id = `ID-${Math.random().toString(36).substr(2, 6).toUpperCase()}`;
-    
-    addProfile({
-      id,
-      policeName: formData.policeName || `Suspect_${id.split('-')[1]}`,
-      mafiaName: formData.mafiaName || `Target_${id.split('-')[1]}`,
-      policeStatus: formData.policeStatus,
-      mafiaStatus: formData.mafiaStatus,
-      policeThreat: formData.policeThreat,
-      mafiaThreat: formData.mafiaThreat,
-      policeNotes: formData.notes || 'No active police files.',
-      mafiaNotes: formData.notes || 'No syndicate intelligence gathered.',
-    });
+    setIsSaving(true);
 
-    toast.success(isPolice ? 'ENTRY INITIALIZED' : 'NODE INJECTED', {
-      description: `Identifier ${id} registered to active database.`,
-      className: 'font-mono uppercase text-xs',
-    });
+    const id = `ID-${Math.random().toString(36).slice(2, 8).toUpperCase()}`;
 
-    onClose();
-    setFormData({
-      policeName: '',
-      mafiaName: '',
-      policeStatus: 'ACTIVE',
-      mafiaStatus: 'ONLINE',
-      policeThreat: 'LOW',
-      mafiaThreat: 'LOW',
-      notes: '',
-    });
+    try {
+      await addProfile({
+        id,
+        policeName: formData.policeName || `Suspect_${id.split('-')[1]}`,
+        mafiaName: formData.mafiaName || `Target_${id.split('-')[1]}`,
+        policeStatus: formData.policeStatus,
+        mafiaStatus: formData.mafiaStatus,
+        policeThreat: formData.policeThreat,
+        mafiaThreat: formData.mafiaThreat,
+        policeNotes: formData.notes || 'No active police files.',
+        mafiaNotes: formData.notes || 'No syndicate intelligence gathered.',
+      });
+
+      toast.success(isPolice ? 'ENTRY INITIALIZED' : 'NODE INJECTED', {
+        description: 'Identifier registered to active database.',
+        className: 'font-mono uppercase text-xs',
+      });
+
+      onClose();
+      setFormData({
+        policeName: '',
+        mafiaName: '',
+        policeStatus: 'ACTIVE',
+        mafiaStatus: 'ONLINE',
+        policeThreat: 'LOW',
+        mafiaThreat: 'LOW',
+        notes: '',
+      });
+    } catch {
+      toast.error('OPERATION FAILED', {
+        description: 'Could not save record. Check permissions or connection.',
+        className: 'font-mono uppercase text-xs',
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -107,119 +120,120 @@ export default function AddRecordModal({ isOpen, onClose }: AddRecordModalProps)
 
               <form onSubmit={handleSubmit} className="p-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                {/* Identity Section */}
-                <div className="space-y-6">
-                  <h3 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-(--accent-primary) pb-2 border-b border-(--border-color)">
-                    Identities & Aliases
-                  </h3>
-                  
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase text-(--text-muted) mb-2">LVPD Designation</label>
-                    <input
-                      required
-                      value={formData.policeName}
-                      onChange={(e) => setFormData({ ...formData, policeName: e.target.value })}
-                      placeholder="e.g. John Doe"
-                      className="w-full bg-black/40 border border-(--border-color) p-2 font-mono text-sm outline-none focus:border-(--accent-primary) transition-colors"
-                    />
-                  </div>
+                  {/* Identity Section */}
+                  <div className="space-y-6">
+                    <h3 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-(--accent-primary) pb-2 border-b border-(--border-color)">
+                      Identities & Aliases
+                    </h3>
 
-                  <div>
-                    <label className="block text-[10px) font-mono uppercase text-(--text-muted) mb-2">Syndicate Alias</label>
-                    <input
-                      required
-                      value={formData.mafiaName}
-                      onChange={(e) => setFormData({ ...formData, mafiaName: e.target.value })}
-                      placeholder="e.g. Ghost_04"
-                      className="w-full bg-black/40 border border-(--border-color) p-2 font-mono text-sm outline-none focus:border-(--accent-primary) transition-colors"
-                    />
-                  </div>
-                </div>
-
-                {/* Classification Section */}
-                <div className="space-y-6">
-                  <h3 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-(--accent-primary) pb-2 border-b border-(--border-color)">
-                    Strategic Classification
-                  </h3>
-
-                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] font-mono uppercase text-(--text-muted) mb-2">Status</label>
-                      <select
-                        value={isPolice ? formData.policeStatus : formData.mafiaStatus}
-                        onChange={(e) => isPolice 
-                          ? setFormData({ ...formData, policeStatus: e.target.value as ProfileData['policeStatus'] })
-                          : setFormData({ ...formData, mafiaStatus: e.target.value as ProfileData['mafiaStatus'] })
-                        }
-                        className="w-full bg-black/40 border border-(--border-color) p-2 font-mono text-xs outline-none focus:border-(--accent-primary)"
-                      >
-                        {isPolice ? (
-                          <>
-                            <option value="ACTIVE">ACTIVE</option>
-                            <option value="WANTED">WANTED</option>
-                            <option value="CUSTODY">CUSTODY</option>
-                          </>
-                        ) : (
-                          <>
-                            <option value="ONLINE">ONLINE</option>
-                            <option value="BURNED">BURNED</option>
-                            <option value="COMPROMISED">COMPROMISED</option>
-                          </>
-                        )}
-                      </select>
+                      <label className="block text-[10px] font-mono uppercase text-(--text-muted) mb-2">LVPD Designation</label>
+                      <input
+                        required
+                        value={formData.policeName}
+                        onChange={(e) => setFormData({ ...formData, policeName: e.target.value })}
+                        placeholder="e.g. John Doe"
+                        className="w-full bg-black/40 border border-(--border-color) p-2 font-mono text-sm outline-none focus:border-(--accent-primary) transition-colors"
+                      />
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-mono uppercase text-(--text-muted) mb-2">Threat / Hazard</label>
-                      <select
-                        value={isPolice ? formData.policeThreat : formData.mafiaThreat}
-                        onChange={(e) => isPolice
-                          ? setFormData({ ...formData, policeThreat: e.target.value as ProfileData['policeThreat'] })
-                          : setFormData({ ...formData, mafiaThreat: e.target.value as ProfileData['mafiaThreat'] })
-                        }
-                        className="w-full bg-black/40 border border-(--border-color) p-2 font-mono text-xs outline-none focus:border-(--accent-primary)"
-                      >
-                        <option value="LOW">LOW</option>
-                        <option value="MEDIUM">MEDIUM</option>
-                        <option value="HIGH">HIGH</option>
-                        <option value="CRITICAL">CRITICAL</option>
-                      </select>
+                      <label className="block text-[10px) font-mono uppercase text-(--text-muted) mb-2">Syndicate Alias</label>
+                      <input
+                        required
+                        value={formData.mafiaName}
+                        onChange={(e) => setFormData({ ...formData, mafiaName: e.target.value })}
+                        placeholder="e.g. Ghost_04"
+                        className="w-full bg-black/40 border border-(--border-color) p-2 font-mono text-sm outline-none focus:border-(--accent-primary) transition-colors"
+                      />
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-[10px] font-mono uppercase text-(--text-muted) mb-2">Intelligence Notes</label>
-                    <textarea
-                      value={formData.notes}
-                      onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                      placeholder="Enter tactical observations..."
-                      rows={3}
-                      className="w-full bg-black/40 border border-(--border-color) p-2 font-mono text-xs outline-none focus:border-(--accent-primary) resize-none"
-                    />
+                  {/* Classification Section */}
+                  <div className="space-y-6">
+                    <h3 className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-(--accent-primary) pb-2 border-b border-(--border-color)">
+                      Strategic Classification
+                    </h3>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-[10px] font-mono uppercase text-(--text-muted) mb-2">Status</label>
+                        <select
+                          value={isPolice ? formData.policeStatus : formData.mafiaStatus}
+                          onChange={(e) => isPolice
+                            ? setFormData({ ...formData, policeStatus: e.target.value as ProfileData['policeStatus'] })
+                            : setFormData({ ...formData, mafiaStatus: e.target.value as ProfileData['mafiaStatus'] })
+                          }
+                          className="w-full bg-black/40 border border-(--border-color) p-2 font-mono text-xs outline-none focus:border-(--accent-primary)"
+                        >
+                          {isPolice ? (
+                            <>
+                              <option value="ACTIVE">ACTIVE</option>
+                              <option value="WANTED">WANTED</option>
+                              <option value="CUSTODY">CUSTODY</option>
+                            </>
+                          ) : (
+                            <>
+                              <option value="ONLINE">ONLINE</option>
+                              <option value="BURNED">BURNED</option>
+                              <option value="COMPROMISED">COMPROMISED</option>
+                            </>
+                          )}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[10px] font-mono uppercase text-(--text-muted) mb-2">Threat / Hazard</label>
+                        <select
+                          value={isPolice ? formData.policeThreat : formData.mafiaThreat}
+                          onChange={(e) => isPolice
+                            ? setFormData({ ...formData, policeThreat: e.target.value as ProfileData['policeThreat'] })
+                            : setFormData({ ...formData, mafiaThreat: e.target.value as ProfileData['mafiaThreat'] })
+                          }
+                          className="w-full bg-black/40 border border-(--border-color) p-2 font-mono text-xs outline-none focus:border-(--accent-primary)"
+                        >
+                          <option value="LOW">LOW</option>
+                          <option value="MEDIUM">MEDIUM</option>
+                          <option value="HIGH">HIGH</option>
+                          <option value="CRITICAL">CRITICAL</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-mono uppercase text-(--text-muted) mb-2">Intelligence Notes</label>
+                      <textarea
+                        value={formData.notes}
+                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                        placeholder="Enter tactical observations..."
+                        rows={3}
+                        className="w-full bg-black/40 border border-(--border-color) p-2 font-mono text-xs outline-none focus:border-(--accent-primary) resize-none"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-(--border-color)">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-6 py-2 border border-(--border-color) font-mono text-[10px] uppercase font-bold hover:bg-white/10 transition-colors"
-                >
-                  Terminate
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-(--accent-primary) text-black font-mono text-[10px] uppercase font-bold flex items-center gap-2 hover:opacity-90 transition-opacity"
-                >
-                  <Save size={14} />
-                  {isPolice ? 'Commit to Database' : 'Initialize Node'}
-                </button>
-              </div>
-            </form>
-          </motion.div>
+                <div className="flex justify-end gap-3 pt-4 border-t border-(--border-color)">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-6 py-2 border border-(--border-color) font-mono text-[10px] uppercase font-bold hover:bg-white/10 transition-colors"
+                  >
+                    Terminate
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSaving}
+                    className="px-6 py-2 bg-(--accent-primary) text-black font-mono text-[10px] uppercase font-bold flex items-center gap-2 hover:opacity-90 transition-opacity"
+                  >
+                    <Save size={14} />
+                    {isSaving ? 'Saving...' : isPolice ? 'Commit to Database' : 'Initialize Node'}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
         </div>
-      </div>
       )}
     </AnimatePresence>
   );
