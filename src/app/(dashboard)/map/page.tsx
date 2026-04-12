@@ -33,15 +33,19 @@ export default function MapPage() {
     }
   }, [theme]);
 
+  const handleSelectNode = (node: MapNode) => {
+    setActiveNode((prev) => (prev?.id === node.id ? null : node));
+  };
+
   return (
     <div className="relative w-full h-[calc(100dvh-4rem)] md:h-screen overflow-hidden">
       {/* Absolute floating UI */}
-      <IncidentFeed onSelectNode={setActiveNode} activeId={activeNode?.id} />
+      <IncidentFeed onSelectNode={handleSelectNode} activeId={activeNode?.id} />
       
       {/* Underlying Map */}
       <MapWidget 
         activeNode={activeNode} 
-        onSelectNode={setActiveNode} 
+        onSelectNode={handleSelectNode} 
         accentColor={accentColor} 
       />
       

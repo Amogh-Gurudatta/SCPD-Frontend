@@ -146,46 +146,54 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return response;
   }, [router]);
 
-  // Initial Fetch logic
-  useEffect(() => {
-    async function loadInitialData() {
-      try {
-        // Parallel fetching
-        const [suspectsRes, warrantsRes, incidentsRes] = await Promise.all([
-          apiFetch('/suspects/').catch(() => null),
-          apiFetch('/warrants/').catch(() => null),
-          apiFetch('/incidents/').catch(() => null),
-        ]);
+  // Centralized data refresh logic
+  const refreshData = useCallback(async () => {
+    try {
+      // Parallel fetching
+      const [criminalsRes, warrantsRes, incidentsRes] = await Promise.all([
+        apiFetch('/criminals/').catch(() => null),
+        apiFetch('/warrants/').catch(() => null),
+        apiFetch('/incidents/').catch(() => null),
+      ]);
 
-        if (suspectsRes?.ok) {
-          const data = await suspectsRes.json();
-          setProfiles(Array.isArray(data) ? data.map(mapSuspectToFrontend) : []);
-        }
-
-        if (warrantsRes?.ok) {
-          const data = await warrantsRes.json();
-          setWarrantLog(Array.isArray(data) ? data.map(mapWarrantToFrontend).reverse() : []);
-        }
-
-        if (incidentsRes?.ok) {
-          const data = await incidentsRes.json();
-          setIncidents(Array.isArray(data) ? data : []);
-        }
-      } catch (error) {
-        console.error('Failed to load initial data:', error);
+      if (criminalsRes?.ok) {
+        const data = await criminalsRes.json();
+        setProfiles(Array.isArray(data) ? data.map(mapSuspectToFrontend) : []);
       }
-    }
 
-    // Only load if there's a token present to avoid immediate 401s on the login page
-    if (typeof window !== 'undefined' && localStorage.getItem('access')) {
-      loadInitialData();
+      if (warrantsRes?.ok) {
+        const data = await warrantsRes.json();
+        setWarrantLog(Array.isArray(data) ? data.map(mapWarrantToFrontend).reverse() : []);
+      }
+
+      if (incidentsRes?.ok) {
+        const data = await incidentsRes.json();
+        setIncidents(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error('Data refresh cycle failed:', error);
     }
   }, [apiFetch]);
+
+  // Establish initial load and polling heart-rate
+  useEffect(() => {
+    const hasToken = typeof window !== 'undefined' && localStorage.getItem('access');
+    
+    if (hasToken) {
+      // Initial trigger
+      refreshData();
+
+      // Aggressive 5s polling for tactical demo responsiveness
+      const intervalId = setInterval(refreshData, 5000);
+
+      return () => clearInterval(intervalId);
+    }
+  }, [refreshData]);
 
   const addProfile = useCallback(async (newProfile: ProfileData) => {
     try {
       const payload = mapSuspectToBackend(newProfile);
-      const res = await apiFetch('/suspects/', {
+      const res = await apiFetch('/criminals/', {
         method: 'POST',
         body: JSON.stringify(payload),
       });
@@ -200,7 +208,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const deleteProfile = useCallback(async (id: string) => {
     try {
-      const res = await apiFetch(`/suspects/${id}/`, {
+      const res = await apiFetch(`/criminals/${id}/`, {
         method: 'DELETE',
       });
       if (res.ok || res.status === 204) {
@@ -214,7 +222,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const updateProfileStatus = useCallback(async (id: string, policeStatus: ProfileData['policeStatus'], mafiaStatus: ProfileData['mafiaStatus']) => {
     try {
       const payload = mapSuspectToBackend({ policeStatus, mafiaStatus });
-      const res = await apiFetch(`/suspects/${id}/`, {
+      const res = await apiFetch(`/criminals/${id}/`, {
         method: 'PATCH',
         body: JSON.stringify(payload),
       });
