@@ -34,7 +34,7 @@ export default function MapWidget({
   accentColor,
 }: MapWidgetProps) {
   const { incidents } = useData();
-  
+
   // Las Vegas center
   const initialCenter: [number, number] = [36.1716, -115.1391];
   return (
@@ -58,7 +58,7 @@ export default function MapWidget({
           return (
             <CircleMarker
               key={node.id}
-              center={[node.lat, node.lng]}
+              center={[node.latitude, node.longitude]}
               radius={isActive ? 12 : 6}
               pathOptions={{
                 color: accentColor,
