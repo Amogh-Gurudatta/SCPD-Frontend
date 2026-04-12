@@ -100,7 +100,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
     headers.set('Content-Type', 'application/json');
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
     const response = await fetch(`${apiUrl}${endpoint}`, { ...options, headers });
 
     // Handle 401 (Unauthorized) errors

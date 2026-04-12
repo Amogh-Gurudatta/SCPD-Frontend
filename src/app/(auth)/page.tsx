@@ -85,7 +85,7 @@ export default function GatewayPage() {
     setIsLoading(true);
     setErrorInfo(null);
 
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
 
     try {
       const response = await fetch(`${apiUrl}/token/`, {
