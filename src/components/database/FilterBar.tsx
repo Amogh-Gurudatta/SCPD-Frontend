@@ -66,7 +66,7 @@ export default function FilterBar({
           
           <button
             onClick={onAddRecord}
-            className={`flex items-center gap-2 px-4 py-2 text-[10px] font-mono font-bold uppercase tracking-widest transition-all shrink-0 border border-[var(--accent-primary)] text-[var(--accent-primary)] cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-2 text-[10px] font-mono font-bold uppercase tracking-widest transition-all shrink-0 border border-(--accent-primary) text-(--accent-primary) cursor-pointer ${
               isPolice 
                 ? 'hover:bg-[#2563eb] hover:text-white hover:border-[#2563eb]' 
                 : 'hover:bg-[#dc2626] hover:text-white hover:border-[#dc2626]'
@@ -94,18 +94,18 @@ export default function FilterBar({
             onFocus={(e) => (e.target.style.borderColor = 'var(--accent-primary)')}
             onBlur={(e) => (e.target.style.borderColor = 'var(--border-color)')}
           >
-            <option value="ALL" className="bg-[#000] text-white">ALL</option>
+            <option value="ALL" className="bg-black text-white">ALL</option>
             {isPolice ? (
               <>
-                <option value="ACTIVE" className="bg-[#000] text-white">ACTIVE</option>
-                <option value="WANTED" className="bg-[#000] text-white">WANTED</option>
-                <option value="CUSTODY" className="bg-[#000] text-white">CUSTODY</option>
+                <option value="ACTIVE" className="bg-black text-white">ACTIVE</option>
+                <option value="WANTED" className="bg-black text-white">WANTED</option>
+                <option value="CUSTODY" className="bg-black text-white">CUSTODY</option>
               </>
             ) : (
               <>
-                <option value="ONLINE" className="bg-[#000] text-white">ONLINE</option>
-                <option value="BURNED" className="bg-[#000] text-white">BURNED</option>
-                <option value="COMPROMISED" className="bg-[#000] text-white">COMPROMISED</option>
+                <option value="ONLINE" className="bg-black text-white">ONLINE</option>
+                <option value="BURNED" className="bg-black text-white">BURNED</option>
+                <option value="COMPROMISED" className="bg-black text-white">COMPROMISED</option>
               </>
             )}
           </select>
@@ -128,10 +128,10 @@ export default function FilterBar({
             onFocus={(e) => (e.target.style.borderColor = 'var(--accent-primary)')}
             onBlur={(e) => (e.target.style.borderColor = 'var(--border-color)')}
           >
-            <option value="ALL" className="bg-[#000] text-white">ALL</option>
-            <option value="LOW" className="bg-[#000] text-white">LOW</option>
-            <option value="MEDIUM" className="bg-[#000] text-white">MEDIUM</option>
-            <option value="HIGH" className="bg-[#000] text-white">HIGH</option>
+            <option value="ALL" className="bg-black text-white">ALL</option>
+            <option value="LOW" className="bg-black text-white">LOW</option>
+            <option value="MEDIUM" className="bg-black text-white">MEDIUM</option>
+            <option value="HIGH" className="bg-black text-white">HIGH</option>
           </select>
         </div>
       </div>

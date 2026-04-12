@@ -63,7 +63,7 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
             key={i}
             custom={i}
             variants={stripVariants}
-            className="h-full w-full bg-[var(--bg-surface)] border-x border-[var(--border-color)]/20 shadow-xl opacity-0 exit:opacity-100"
+            className="h-full w-full bg-(--bg-surface) border-x border-(--border-color)/20 shadow-xl opacity-0 exit:opacity-100"
           />
         ))}
       </div>
@@ -105,7 +105,7 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
 
             <div>
               <h3
-                className="text-sm font-mono font-bold tracking-wide uppercase group-hover:text-[var(--accent-primary)] transition-colors duration-200"
+                className="text-sm font-mono font-bold tracking-wide uppercase group-hover:text-(--accent-primary) transition-colors duration-200"
                 style={{ color: 'var(--text-primary)' }}
               >
                 {name}

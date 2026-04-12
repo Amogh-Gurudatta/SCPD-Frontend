@@ -43,7 +43,7 @@ export default function LivePreview({
     <div className="w-full h-full flex items-start justify-center p-4">
       <div
         id="warrant-document"
-        className="relative w-full max-w-[350px] sm:max-w-md md:max-w-lg shadow-2xl flex flex-col p-[5%] transition-all duration-200 overflow-hidden bg-[var(--bg-surface)]"
+        className="relative w-full max-w-[350px] sm:max-w-md md:max-w-lg shadow-2xl flex flex-col p-[5%] transition-all duration-200 overflow-hidden bg-(--bg-surface)"
         style={{
           aspectRatio: '1 / 1.414',
           border: '2px solid var(--border-color)',
@@ -86,7 +86,7 @@ export default function LivePreview({
           >
             <div className="flex flex-col gap-[1em]">
               <div className="flex justify-between items-baseline">
-                <span className="uppercase font-mono tracking-widest text-[var(--text-muted)]" style={{ fontSize: '0.7em' }}>
+                <span className="uppercase font-mono tracking-widest text-(--text-muted)" style={{ fontSize: '0.7em' }}>
                   {isPolice ? 'Subject Name:' : 'Target Alias:'}
                 </span>
                 <span
@@ -97,15 +97,15 @@ export default function LivePreview({
                 </span>
               </div>
               <div className="flex justify-between items-baseline">
-                <span className="uppercase font-mono tracking-widest text-[var(--text-muted)]" style={{ fontSize: '0.7em' }}>
+                <span className="uppercase font-mono tracking-widest text-(--text-muted)" style={{ fontSize: '0.7em' }}>
                   {isPolice ? 'Database ID:' : 'Node ID:'}
                 </span>
-                <span className="font-mono text-[var(--text-muted)]" style={{ fontSize: '0.8em' }}>
+                <span className="font-mono text-(--text-muted)" style={{ fontSize: '0.8em' }}>
                   {targetId || 'N/A'}
                 </span>
               </div>
               <div className="flex justify-between items-baseline">
-                <span className="uppercase font-mono tracking-widest text-[var(--text-muted)]" style={{ fontSize: '0.7em' }}>
+                <span className="uppercase font-mono tracking-widest text-(--text-muted)" style={{ fontSize: '0.7em' }}>
                   {isPolice ? 'Current Status:' : 'Uplink Status:'}
                 </span>
                 <span
@@ -120,7 +120,7 @@ export default function LivePreview({
 
           {/* Urgency Meter */}
           <div className="mb-[6%]">
-            <span className="uppercase font-mono tracking-widest text-[var(--text-muted)] block mb-[2%]" style={{ fontSize: '0.7em' }}>
+            <span className="uppercase font-mono tracking-widest text-(--text-muted) block mb-[2%]" style={{ fontSize: '0.7em' }}>
               {isPolice ? 'Priority Level:' : 'Hazard Level:'} {urgency}/100
             </span>
             <div
@@ -139,7 +139,7 @@ export default function LivePreview({
 
           {/* Justification Text - SCROLLABLE DOSSIER STYLE */}
           <div className="flex-1 overflow-y-auto pr-[2%] custom-scrollbar">
-            <span className="uppercase font-mono tracking-widest text-[var(--text-muted)] block mb-[2%]" style={{ fontSize: '0.7em' }}>
+            <span className="uppercase font-mono tracking-widest text-(--text-muted) block mb-[2%]" style={{ fontSize: '0.7em' }}>
               {isPolice ? 'Incident Justification:' : 'Rationale:'}
             </span>
             <motion.p
@@ -147,14 +147,14 @@ export default function LivePreview({
               initial={{ opacity: 0.5, filter: 'blur(2px)' }}
               animate={{ opacity: 1, filter: 'blur(0px)' }}
               transition={{ duration: 0.1, ease: 'linear' }}
-              className="font-mono leading-relaxed text-[var(--text-primary)] whitespace-pre-wrap"
+              className="font-mono leading-relaxed text-(--text-primary) whitespace-pre-wrap"
               style={{ fontSize: '0.9em' }}
             >
               {justification || (isPolice ? '[Enter warrant justification notes here...]' : '[Enter operational rationale here...]')}
               <motion.span
                 animate={{ opacity: [1, 0, 1] }}
                 transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
-                className="ml-1 inline-block w-2 h-4 align-middle bg-[var(--accent-primary)]"
+                className="ml-1 inline-block w-2 h-4 align-middle bg-(--accent-primary)"
               />
             </motion.p>
           </div>

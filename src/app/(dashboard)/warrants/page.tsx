@@ -36,25 +36,25 @@ export default function WarrantsPage() {
     <div className="min-h-screen p-6 pt-24 lg:p-12 lg:pt-28 pb-24 overflow-y-auto" style={{ backgroundColor: 'var(--bg-base)' }}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8 border-l-4 border-[var(--accent-primary)] pl-6">
-          <h1 className="text-2xl font-mono font-bold uppercase tracking-[0.3em] text-[var(--text-primary)] mb-2">
+        <div className="mb-8 border-l-4 border-(--accent-primary) pl-6">
+          <h1 className="text-2xl font-mono font-bold uppercase tracking-[0.3em] text-(--text-primary) mb-2">
             {isPolice ? 'Transmission Log' : 'Order Manifest'}
           </h1>
-          <p className="text-xs font-mono uppercase tracking-widest text-[var(--text-muted)]">
+          <p className="text-xs font-mono uppercase tracking-widest text-(--text-muted)">
             {isPolice ? 'Historical arrest warrants and tactical authorizations.' : 'Logged burn orders and system purge commands.'}
           </p>
         </div>
 
         {/* Tactical Filter Bar */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8 p-4 border border-[var(--border-color)] bg-[var(--bg-surface)]">
+        <div className="flex flex-col md:flex-row gap-4 mb-8 p-4 border border-(--border-color) bg-(--bg-surface)">
           <div className="relative flex-1">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-muted)" />
             <input
               type="text"
               placeholder="Search by ID or Target..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-transparent border border-[var(--border-color)] font-mono text-sm text-[var(--text-primary)] outline-none focus:border-[var(--accent-primary)]"
+              className="w-full pl-10 pr-4 py-2 bg-transparent border border-(--border-color) font-mono text-sm text-(--text-primary) outline-none focus:border-(--accent-primary)"
             />
           </div>
 
@@ -62,7 +62,7 @@ export default function WarrantsPage() {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-4 py-2 bg-transparent border border-[var(--border-color)] font-mono text-xs text-[var(--text-primary)] outline-none cursor-pointer"
+              className="px-4 py-2 bg-transparent border border-(--border-color) font-mono text-xs text-(--text-primary) outline-none cursor-pointer"
             >
               <option value="ALL">ALL TYPES</option>
               <option value="WARRANT">WARRANTS</option>
@@ -71,7 +71,7 @@ export default function WarrantsPage() {
 
             <button
               onClick={() => setSortOrder(prev => prev === 'NEWEST' ? 'OLDEST' : 'NEWEST')}
-              className="flex items-center gap-2 px-4 py-2 border border-[var(--border-color)] font-mono text-xs text-[var(--text-primary)] hover:bg-[var(--accent-primary)] hover:text-black transition-colors"
+              className="flex items-center gap-2 px-4 py-2 border border-(--border-color) font-mono text-xs text-(--text-primary) hover:bg-(--accent-primary) hover:text-black transition-colors"
             >
               {sortOrder === 'NEWEST' ? <SortDesc size={14} /> : <SortAsc size={14} />}
               {sortOrder}
@@ -80,10 +80,10 @@ export default function WarrantsPage() {
         </div>
 
         {/* Data Table */}
-        <div className="overflow-x-auto border border-[var(--border-color)] bg-[var(--bg-surface)]">
+        <div className="overflow-x-auto border border-(--border-color) bg-(--bg-surface)">
           <table className="w-full text-left font-mono border-collapse">
             <thead>
-              <tr className="bg-black/40 border-b border-[var(--border-color)] text-[10px] uppercase tracking-[0.2em] text-[var(--text-muted)]">
+              <tr className="bg-black/40 border-b border-(--border-color) text-[10px] uppercase tracking-[0.2em] text-(--text-muted)">
                 <th className="p-4">Entry ID</th>
                 <th className="p-4">Target ID</th>
                 <th className="p-4">Timestamp</th>
@@ -101,16 +101,16 @@ export default function WarrantsPage() {
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 10 }}
                       layout
-                      className="border-b border-[var(--border-color)]/50 hover:bg-white/5 transition-colors group"
+                      className="border-b border-(--border-color)/50 hover:bg-white/5 transition-colors group"
                     >
-                      <td className="p-4 text-sm font-bold text-[var(--text-primary)]">{w.id}</td>
-                      <td className="p-4 text-xs text-[var(--accent-primary)]">
+                      <td className="p-4 text-sm font-bold text-(--text-primary)">{w.id}</td>
+                      <td className="p-4 text-xs text-(--accent-primary)">
                         <span className="flex items-center gap-2">
                           {w.targetId}
                           <ArrowUpRight size={12} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                         </span>
                       </td>
-                      <td className="p-4 text-[10px] text-[var(--text-muted)]">
+                      <td className="p-4 text-[10px] text-(--text-muted)">
                         {new Date(w.timestamp).toLocaleString()}
                       </td>
                       <td className="p-4">
@@ -131,7 +131,7 @@ export default function WarrantsPage() {
                   ))
                 ) : (
                   <motion.tr initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                    <td colSpan={5} className="p-20 text-center text-[10px] uppercase tracking-[0.3em] text-[var(--text-muted)]">
+                    <td colSpan={5} className="p-20 text-center text-[10px] uppercase tracking-[0.3em] text-(--text-muted)">
                       No matching transmissions found in local cache.
                     </td>
                   </motion.tr>

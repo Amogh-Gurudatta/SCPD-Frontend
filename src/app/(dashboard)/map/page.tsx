@@ -48,8 +48,8 @@ export default function MapPage() {
       {/* Decorative reticle overlay */}
       <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center opacity-30">
         <div style={{ border: `1px solid ${accentColor}`, width: '40vh', height: '40vh', borderRadius: '50%' }} />
-        <div className="absolute w-[80vh] h-[1px]" style={{ backgroundColor: accentColor, opacity: 0.5 }} />
-        <div className="absolute h-[80vh] w-[1px]" style={{ backgroundColor: accentColor, opacity: 0.5 }} />
+        <div className="absolute w-[80vh] h-px" style={{ backgroundColor: accentColor, opacity: 0.5 }} />
+        <div className="absolute h-[80vh] w-px" style={{ backgroundColor: accentColor, opacity: 0.5 }} />
       </div>
     </div>
   );

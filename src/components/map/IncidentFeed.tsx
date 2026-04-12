@@ -20,7 +20,7 @@ export default function IncidentFeed({
 
   return (
     <div
-      className={`absolute top-4 md:top-6 right-4 md:right-6 w-[calc(100%-2rem)] md:w-80 z-[1000] flex flex-col transition-all duration-300 ${isExpanded ? 'max-h-[80vh]' : 'max-h-[48px] md:max-h-[calc(100vh-48px)]'}`}
+      className={`absolute top-4 md:top-6 right-4 md:right-6 w-[calc(100%-2rem)] md:w-80 z-1000 flex flex-col transition-all duration-300 ${isExpanded ? 'max-h-[80vh]' : 'max-h-[48px] md:max-h-[calc(100vh-48px)]'}`}
       style={{
         backgroundColor: 'var(--bg-surface)',
         backdropFilter: 'blur(24px)',
@@ -29,7 +29,7 @@ export default function IncidentFeed({
       }}
     >
       <div
-        className={`px-4 py-3 sticky top-0 flex justify-between items-center cursor-pointer md:cursor-default ${isExpanded ? 'border-b border-[var(--border-color)]' : 'md:border-b md:border-[var(--border-color)]'}`}
+        className={`px-4 py-3 sticky top-0 flex justify-between items-center cursor-pointer md:cursor-default ${isExpanded ? 'border-b border-(--border-color)' : 'md:border-b md:border-(--border-color)'}`}
         style={{
           backgroundColor: 'color-mix(in srgb, var(--bg-surface) 90%, transparent)',
         }}

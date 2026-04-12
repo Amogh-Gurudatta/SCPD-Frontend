@@ -70,7 +70,7 @@ export default function Navigation() {
     <>
       {/* Mobile Top Bar */}
       <div 
-        className="md:hidden fixed top-0 w-full z-[2000] h-16 flex items-center justify-between px-4"
+        className="md:hidden fixed top-0 w-full z-2000 h-16 flex items-center justify-between px-4"
         style={{
           backgroundColor: 'color-mix(in srgb, var(--bg-surface) 90%, transparent)',
           backdropFilter: 'blur(24px)',
@@ -107,7 +107,7 @@ export default function Navigation() {
       {/* Mobile Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 z-[1900] md:hidden"
+          className="fixed inset-0 z-1900 md:hidden"
           style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }}
           onClick={() => setIsOpen(false)}
         />
@@ -115,7 +115,7 @@ export default function Navigation() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 h-screen w-64 flex flex-col z-[2000] transform transition-transform duration-200 ease-in-out md:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 h-screen w-64 flex flex-col z-2000 transform transition-transform duration-200 ease-in-out md:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
         style={{

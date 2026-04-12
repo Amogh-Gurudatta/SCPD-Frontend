@@ -31,14 +31,14 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   // Prevent UI flash: show a tactical loading gate until authorized
   if (!isAuthorized) {
     return (
-      <div className="fixed inset-0 z-[9999] bg-[#030a14] flex flex-col items-center justify-center font-mono">
+      <div className="fixed inset-0 z-9999 bg-[#030a14] flex flex-col items-center justify-center font-mono">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-2 h-2 bg-[#2563eb] animate-pulse" />
           <span className="text-[#2563eb] text-xs tracking-[0.4em] uppercase font-bold">
             Verifying Credentials
           </span>
         </div>
-        <div className="w-48 h-[1px] bg-[#1e293b] relative overflow-hidden">
+        <div className="w-48 h-px bg-[#1e293b] relative overflow-hidden">
           <div className="absolute top-0 left-0 h-full w-1/3 bg-[#2563eb] animate-[loadingScan_1.5s_infinite_linear]" />
         </div>
         

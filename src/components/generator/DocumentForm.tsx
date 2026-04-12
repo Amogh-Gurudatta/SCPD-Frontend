@@ -32,7 +32,7 @@ export default function DocumentForm({
     <form onSubmit={onSubmit} className="flex flex-col gap-6 w-full max-w-md">
       {/* Target Selector */}
       <div className="flex flex-col gap-2">
-        <label className="text-[10px] uppercase font-mono tracking-widest text-[var(--text-muted)]">
+        <label className="text-[10px] uppercase font-mono tracking-widest text-(--text-muted)">
           {isPolice ? 'Select Suspect Target:' : 'Select Syndicate Target:'}
         </label>
         <select
@@ -63,10 +63,10 @@ export default function DocumentForm({
       {/* Urgency Slider */}
       <div className="flex flex-col gap-2">
         <div className="flex justify-between items-end">
-          <label className="text-[10px] uppercase font-mono tracking-widest text-[var(--text-muted)]">
+          <label className="text-[10px] uppercase font-mono tracking-widest text-(--text-muted)">
             {isPolice ? 'Warrant Priority:' : 'Urgency/Threat Level:'}
           </label>
-          <span className="text-[10px] font-mono tracking-widest text-[var(--accent-primary)]">
+          <span className="text-[10px] font-mono tracking-widest text-(--accent-primary)">
             {urgency} / 100
           </span>
         </div>
@@ -110,7 +110,7 @@ export default function DocumentForm({
 
       {/* Textarea */}
       <div className="flex flex-col gap-2 h-48">
-        <label className="text-[10px] uppercase font-mono tracking-widest text-[var(--text-muted)]">
+        <label className="text-[10px] uppercase font-mono tracking-widest text-(--text-muted)">
           {isPolice ? 'Incident Justification:' : 'Burn Order Rationale:'}
         </label>
         <textarea
@@ -150,7 +150,7 @@ export default function DocumentForm({
           }
         }}
       >
-        <div className="absolute inset-0 flex items-center justify-center z-10 transition-colors duration-200 group-hover:text-[#000]">
+        <div className="absolute inset-0 flex items-center justify-center z-10 transition-colors duration-200 group-hover:text-black">
           <span 
             className="text-xs font-mono font-bold uppercase tracking-[0.3em]"
             style={{ 
@@ -168,7 +168,7 @@ export default function DocumentForm({
         {/* The Transmitting Progress Juice */}
         {isSubmitting && (
           <div 
-            className="absolute top-0 left-0 h-full transition-all duration-[2000ms] ease-linear"
+            className="absolute top-0 left-0 h-full transition-all duration-2000 ease-linear"
             style={{ 
               backgroundColor: 'color-mix(in srgb, var(--accent-primary) 40%, transparent)',
               width: '100%',

@@ -74,7 +74,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="fixed inset-0 pointer-events-none z-[9999] bg-black overflow-hidden"
+            className="fixed inset-0 pointer-events-none z-9999 bg-black overflow-hidden"
           >
             {/* 1. RGB Ghosting / Channel Split Effect */}
             <motion.div
