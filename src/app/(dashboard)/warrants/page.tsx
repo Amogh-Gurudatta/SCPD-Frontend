@@ -12,7 +12,7 @@ export default function WarrantsPage() {
   const isPolice = theme === 'police';
 
   const [query, setQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState('ALL');
+  const [urgencyRange, setUrgencyRange] = useState<[number, number]>([0, 100]);
   const [sortOrder, setSortOrder] = useState<'NEWEST' | 'OLDEST'>('NEWEST');
 
   const filteredWarrants = useMemo(() => {
@@ -22,8 +22,9 @@ export default function WarrantsPage() {
       const searchStr = query.toLowerCase();
 
       const matchesQuery = targetIdStr.includes(searchStr) || idStr.includes(searchStr);
-      const matchesType = typeFilter === 'ALL' || w.type === typeFilter;
-      return matchesQuery && matchesType;
+      const matchesUrgency = w.urgency >= urgencyRange[0] && w.urgency <= urgencyRange[1];
+
+      return matchesQuery && matchesUrgency;
     });
 
     result.sort((a, b) => {
@@ -49,7 +50,7 @@ export default function WarrantsPage() {
         </div>
 
         {/* Tactical Filter Bar */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8 p-4 border border-(--border-color) bg-(--bg-surface)">
+        <div className="flex flex-col md:flex-row gap-6 mb-8 p-6 border border-(--border-color) bg-(--bg-surface)">
           <div className="relative flex-1">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-muted)" />
             <input
@@ -61,20 +62,52 @@ export default function WarrantsPage() {
             />
           </div>
 
-          <div className="flex gap-4">
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="px-4 py-2 bg-transparent border border-(--border-color) font-mono text-xs text-(--text-primary) outline-none cursor-pointer"
-            >
-              <option value="ALL">ALL TYPES</option>
-              <option value="WARRANT">WARRANTS</option>
-              <option value="BURN">BURN ORDERS</option>
-            </select>
+          <div className="flex flex-col md:flex-row gap-6 items-center">
+            {/* Dual Range Urgency Slider */}
+            <div className="flex flex-col gap-2 min-w-[200px]">
+              <div className="flex justify-between text-[10px] font-mono text-(--text-muted) uppercase space-x-4">
+                <span>Urgency</span>
+                <span className="text-(--accent-primary)">{urgencyRange[0]}% - {urgencyRange[1]}%</span>
+              </div>
+              <div className="relative h-6 flex items-center group">
+                {/* Track Background */}
+                <div className="absolute w-full h-1 bg-black/40 border border-(--border-color)" />
+                {/* Active Range Highlight */}
+                <div 
+                  className="absolute h-1 bg-(--accent-primary)/30"
+                  style={{ 
+                    left: `${urgencyRange[0]}%`, 
+                    width: `${urgencyRange[1] - urgencyRange[0]}%` 
+                  }}
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={urgencyRange[0]}
+                  onChange={(e) => {
+                    const val = Math.min(Number(e.target.value), urgencyRange[1] - 1);
+                    setUrgencyRange([val, urgencyRange[1]]);
+                  }}
+                  className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-1 [&::-webkit-slider-thumb]:bg-(--accent-primary) [&::-webkit-slider-thumb]:cursor-pointer"
+                />
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={urgencyRange[1]}
+                  onChange={(e) => {
+                    const val = Math.max(Number(e.target.value), urgencyRange[0] + 1);
+                    setUrgencyRange([urgencyRange[0], val]);
+                  }}
+                  className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-1 [&::-webkit-slider-thumb]:bg-(--accent-primary) [&::-webkit-slider-thumb]:cursor-pointer"
+                />
+              </div>
+            </div>
 
             <button
               onClick={() => setSortOrder(prev => prev === 'NEWEST' ? 'OLDEST' : 'NEWEST')}
-              className="flex items-center gap-2 px-4 py-2 border border-(--border-color) font-mono text-xs text-(--text-primary) hover:bg-(--accent-primary) hover:text-black transition-colors"
+              className="flex items-center gap-2 h-10 px-4 border border-(--border-color) font-mono text-xs text-(--text-primary) hover:bg-(--accent-primary) hover:text-black transition-colors"
             >
               {sortOrder === 'NEWEST' ? <SortDesc size={14} /> : <SortAsc size={14} />}
               {sortOrder}
