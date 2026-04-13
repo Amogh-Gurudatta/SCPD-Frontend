@@ -84,34 +84,41 @@ export default function DatabasePage() {
       <AddRecordModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
       
       <div className="max-w-7xl mx-auto px-4 pb-12">
-        {filteredProfiles.length > 0 ? (
-          <motion.div 
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-          >
-            <AnimatePresence mode="popLayout">
-              {filteredProfiles.map((profile) => (
-                <motion.div
-                  layout
-                  key={profile.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 1, transition: { duration: 0.8 } }}
-                >
-                  <ProfileCard profile={profile} />
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </motion.div>
-        ) : (
-          <div className="flex flex-col items-center justify-center p-20 opacity-50">
-            <p className="text-sm font-mono uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
-              No matches found in active database.
-            </p>
-          </div>
-        )}
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <AnimatePresence mode="popLayout">
+            {filteredProfiles.map((profile) => (
+              <motion.div
+                layout
+                key={profile.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 1, transition: { duration: 0.8 } }}
+              >
+                <ProfileCard profile={profile} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+
+        <AnimatePresence>
+          {filteredProfiles.length === 0 && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col items-center justify-center p-20"
+            >
+              <p className="text-sm font-mono uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+                No matches found in active database.
+              </p>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
