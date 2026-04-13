@@ -62,16 +62,41 @@ export default function WarrantsPage() {
             />
           </div>
 
-          <div className="flex flex-col md:flex-row gap-6 items-center">
+          <div className="flex flex-col md:flex-row gap-8 items-end">
             {/* Dual Range Urgency Slider */}
-            <div className="flex flex-col gap-2 min-w-[200px]">
-              <div className="flex justify-between text-[10px] font-mono text-(--text-muted) uppercase space-x-4">
-                <span>Urgency</span>
-                <span className="text-(--accent-primary)">{urgencyRange[0]}% - {urgencyRange[1]}%</span>
+            <div className="flex flex-col gap-3 min-w-[280px]">
+              <div className="flex justify-between items-center text-[10px] font-mono uppercase">
+                <span className="text-(--text-muted)">Urgency Threshold (%)</span>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    min="0"
+                    max={urgencyRange[1] - 1}
+                    value={urgencyRange[0]}
+                    onChange={(e) => {
+                      const val = Math.max(0, Math.min(Number(e.target.value), urgencyRange[1] - 1));
+                      setUrgencyRange([val, urgencyRange[1]]);
+                    }}
+                    className="w-12 bg-black/40 border border-(--border-color) p-1 text-(--accent-primary) text-center outline-none focus:border-(--accent-primary)"
+                  />
+                  <span className="text-(--text-muted)">—</span>
+                  <input
+                    type="number"
+                    min={urgencyRange[0] + 1}
+                    max="100"
+                    value={urgencyRange[1]}
+                    onChange={(e) => {
+                      const val = Math.max(urgencyRange[0] + 1, Math.min(Number(e.target.value), 100));
+                      setUrgencyRange([urgencyRange[0], val]);
+                    }}
+                    className="w-12 bg-black/40 border border-(--border-color) p-1 text-(--accent-primary) text-center outline-none focus:border-(--accent-primary)"
+                  />
+                </div>
               </div>
-              <div className="relative h-6 flex items-center group">
+              
+              <div className="relative h-6 flex items-center">
                 {/* Track Background */}
-                <div className="absolute w-full h-1 bg-black/40 border border-(--border-color)" />
+                <div className="absolute w-full h-1 bg-black/20 border border-(--border-color)" />
                 {/* Active Range Highlight */}
                 <div 
                   className="absolute h-1 bg-(--accent-primary)/30"
@@ -80,6 +105,8 @@ export default function WarrantsPage() {
                     width: `${urgencyRange[1] - urgencyRange[0]}%` 
                   }}
                 />
+                
+                {/* Min Slider handled via z-index logic if needed, but standard stacking often works if pointer events are right */}
                 <input
                   type="range"
                   min="0"
@@ -89,7 +116,8 @@ export default function WarrantsPage() {
                     const val = Math.min(Number(e.target.value), urgencyRange[1] - 1);
                     setUrgencyRange([val, urgencyRange[1]]);
                   }}
-                  className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-1 [&::-webkit-slider-thumb]:bg-(--accent-primary) [&::-webkit-slider-thumb]:cursor-pointer"
+                  style={{ zIndex: urgencyRange[0] > 50 ? 5 : 4 }}
+                  className="absolute w-full appearance-none bg-transparent pointer-events-none cursor-pointer [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:bg-(--accent-primary) [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-2 [&::-moz-range-thumb]:bg-(--accent-primary) [&::-moz-range-thumb]:border-none"
                 />
                 <input
                   type="range"
@@ -100,17 +128,18 @@ export default function WarrantsPage() {
                     const val = Math.max(Number(e.target.value), urgencyRange[0] + 1);
                     setUrgencyRange([urgencyRange[0], val]);
                   }}
-                  className="absolute w-full appearance-none bg-transparent pointer-events-none [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-1 [&::-webkit-slider-thumb]:bg-(--accent-primary) [&::-webkit-slider-thumb]:cursor-pointer"
+                  style={{ zIndex: urgencyRange[1] < 50 ? 5 : 4 }}
+                  className="absolute w-full appearance-none bg-transparent pointer-events-none cursor-pointer [&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:bg-(--accent-primary) [&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-2 [&::-moz-range-thumb]:bg-(--accent-primary) [&::-moz-range-thumb]:border-none"
                 />
               </div>
             </div>
 
             <button
               onClick={() => setSortOrder(prev => prev === 'NEWEST' ? 'OLDEST' : 'NEWEST')}
-              className="flex items-center gap-2 h-10 px-4 border border-(--border-color) font-mono text-xs text-(--text-primary) hover:bg-(--accent-primary) hover:text-black transition-colors"
+              className="flex items-center gap-2 h-9 px-6 border border-(--border-color) font-mono text-xs text-(--text-primary) hover:bg-(--accent-primary) hover:text-black transition-colors"
             >
               {sortOrder === 'NEWEST' ? <SortDesc size={14} /> : <SortAsc size={14} />}
-              {sortOrder}
+              {sortOrder === 'NEWEST' ? 'RECENCY: DESC' : 'RECENCY: ASC'}
             </button>
           </div>
         </div>
