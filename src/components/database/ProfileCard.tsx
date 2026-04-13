@@ -5,7 +5,7 @@ import { useData } from '@/context/DataContext';
 import { type ProfileData } from '@/lib/profileData';
 import { User, Archive, Trash2, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 
 interface ProfileCardProps {
   profile: ProfileData;
@@ -41,18 +41,20 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
   // For Police, WANTED might be accent. For Mafia, ONLINE might be accent.
   const isHighAlert = status === 'WANTED' || status === 'BURNED' || status === 'COMPROMISED';
 
-  const shredVariants = {
+  const shredVariants: Variants = {
+    initial: { opacity: 1 },
     exit: {
       opacity: 0,
-      transition: { duration: 0.4, staggerChildren: 0.02 }
+      transition: { duration: 0.5, staggerChildren: 0.03 }
     }
   };
 
-  const stripVariants = {
+  const stripVariants: Variants = {
+    initial: { opacity: 0, y: 0 },
     exit: (i: number) => ({
-      y: i % 2 === 0 ? 100 : -100,
-      opacity: 0,
-      transition: { duration: 0.3, ease: "circIn" } as const
+      opacity: 1,
+      y: i % 2 === 0 ? 120 : -120,
+      transition: { duration: 0.4, ease: "circIn" } as const
     })
   };
 
@@ -60,6 +62,7 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
     <motion.div
       layout
       variants={shredVariants}
+      initial="initial"
       exit="exit"
       className="relative group overflow-hidden"
     >
@@ -70,7 +73,7 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
             key={i}
             custom={i}
             variants={stripVariants}
-            className="h-full w-full bg-(--bg-surface) border-x border-(--border-color)/20 shadow-xl opacity-0 exit:opacity-100"
+            className="h-full w-full bg-(--bg-surface) border-x border-(--border-color)/20 shadow-xl"
           />
         ))}
       </div>
