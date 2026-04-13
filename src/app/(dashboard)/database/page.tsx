@@ -91,7 +91,7 @@ export default function DatabasePage() {
             initial="hidden"
             animate="visible"
           >
-            <AnimatePresence mode="popLayout">
+            <AnimatePresence>
               {filteredProfiles.map((profile) => (
                 <ProfileCard key={profile.id} profile={profile} />
               ))}
