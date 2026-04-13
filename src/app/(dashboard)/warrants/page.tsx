@@ -34,7 +34,7 @@ export default function WarrantsPage() {
     });
 
     return result;
-  }, [warrantLog, query, typeFilter, sortOrder]);
+  }, [warrantLog, query, urgencyRange, sortOrder]);
 
   return (
     <div className="min-h-screen p-6 pt-24 lg:p-12 lg:pt-28 pb-24 overflow-y-auto" style={{ backgroundColor: 'var(--bg-base)' }}>
