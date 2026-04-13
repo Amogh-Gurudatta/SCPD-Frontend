@@ -91,9 +91,17 @@ export default function DatabasePage() {
             initial="hidden"
             animate="visible"
           >
-            <AnimatePresence>
+            <AnimatePresence mode="popLayout">
               {filteredProfiles.map((profile) => (
-                <ProfileCard key={profile.id} profile={profile} />
+                <motion.div
+                  layout
+                  key={profile.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 1, transition: { duration: 0.8 } }}
+                >
+                  <ProfileCard profile={profile} />
+                </motion.div>
               ))}
             </AnimatePresence>
           </motion.div>
