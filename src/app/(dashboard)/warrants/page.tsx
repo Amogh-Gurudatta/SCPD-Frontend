@@ -17,8 +17,11 @@ export default function WarrantsPage() {
 
   const filteredWarrants = useMemo(() => {
     let result = [...warrantLog].filter((w) => {
-      const matchesQuery = w.targetId.toLowerCase().includes(query.toLowerCase()) || 
-                           w.id.toLowerCase().includes(query.toLowerCase());
+      const targetIdStr = String(w.targetId || '').toLowerCase();
+      const idStr = String(w.id || '').toLowerCase();
+      const searchStr = query.toLowerCase();
+
+      const matchesQuery = targetIdStr.includes(searchStr) || idStr.includes(searchStr);
       const matchesType = typeFilter === 'ALL' || w.type === typeFilter;
       return matchesQuery && matchesType;
     });

@@ -65,8 +65,8 @@ function mapSuspectToBackend(data: Partial<ProfileData>): any {
 // FIXED: Properly reads type_warrant from the Django backend
 function mapWarrantToFrontend(data: any): WarrantEntry {
   return {
-    id: data.id,
-    targetId: data.target_id || '',
+    id: String(data.id),
+    targetId: data.target_id ? String(data.target_id) : '',
     timestamp: data.timestamp || new Date().toISOString(),
     urgency: data.urgency || 0,
     justification: data.justification || '',
