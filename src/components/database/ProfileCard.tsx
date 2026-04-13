@@ -44,8 +44,19 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
   const shredVariants: Variants = {
     initial: { opacity: 1 },
     exit: {
-      opacity: 0,
-      transition: { duration: 0.5, staggerChildren: 0.03 }
+      transition: { 
+        staggerChildren: 0.02,
+        duration: 0.6 
+      }
+    }
+  };
+
+  const contentVariants: Variants = {
+    initial: { opacity: 1 },
+    exit: { 
+      opacity: 0, 
+      filter: 'blur(8px)',
+      transition: { duration: 0.2 } 
     }
   };
 
@@ -53,8 +64,11 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
     initial: { opacity: 0, y: 0 },
     exit: (i: number) => ({
       opacity: 1,
-      y: i % 2 === 0 ? 120 : -120,
-      transition: { duration: 0.4, ease: "circIn" } as const
+      y: i % 2 === 0 ? 150 : -150,
+      transition: { 
+        duration: 0.4, 
+        ease: "circIn"
+      }
     })
   };
 
@@ -63,11 +77,12 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
       layout
       variants={shredVariants}
       initial="initial"
+      animate="initial"
       exit="exit"
-      className="relative group overflow-hidden"
+      className="relative group "
     >
       {/* Shred Effect Strips (Hidden unless exiting) */}
-      <div className="absolute inset-0 grid grid-cols-12 pointer-events-none z-50">
+      <motion.div className="absolute inset-0 grid grid-cols-12 pointer-events-none z-50 overflow-hidden">
         {[...Array(12)].map((_, i) => (
           <motion.div
             key={i}
@@ -76,9 +91,10 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
             className="h-full w-full bg-(--bg-surface) border-x border-(--border-color)/20 shadow-xl"
           />
         ))}
-      </div>
+      </motion.div>
 
-      <div
+      <motion.div
+        variants={contentVariants}
         className="flex flex-col p-5 group cursor-pointer transition-all duration-200 relative overflow-hidden"
         style={{
           backgroundColor: 'var(--bg-surface)',
@@ -167,7 +183,7 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
             {notes}
           </p>
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
