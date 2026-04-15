@@ -17,7 +17,7 @@ export default function GatewayPage() {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-  
+
   // Backdoor states
   const [tapData, setTapData] = useState({ count: 0, lastTime: 0 });
   const [codeTriggered, setCodeTriggered] = useState(false);
@@ -78,7 +78,7 @@ export default function GatewayPage() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!fieldOne || !fieldTwo) return;
 

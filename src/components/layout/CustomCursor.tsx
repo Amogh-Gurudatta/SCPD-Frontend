@@ -27,8 +27,8 @@ export default function CustomCursor() {
 
       const target = e.target as HTMLElement;
       setIsHovering(
-        window.getComputedStyle(target).cursor === 'pointer' || 
-        target.tagName === 'BUTTON' || 
+        window.getComputedStyle(target).cursor === 'pointer' ||
+        target.tagName === 'BUTTON' ||
         target.tagName === 'A'
       );
     };
@@ -59,7 +59,7 @@ export default function CustomCursor() {
       >
         {isPolice ? <Shield size={20} fill="currentColor" fillOpacity={isHovering ? 0.2 : 0} /> : <Terminal size={20} />}
       </motion.div>
-      
+
       {/* Trailing Dot */}
       <motion.div
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-current"

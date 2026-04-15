@@ -69,7 +69,7 @@ export default function Navigation() {
   return (
     <>
       {/* Mobile Top Bar */}
-      <div 
+      <div
         className="md:hidden fixed top-0 w-full z-2000 h-16 flex items-center justify-between px-4"
         style={{
           backgroundColor: 'color-mix(in srgb, var(--bg-surface) 90%, transparent)',
@@ -88,12 +88,12 @@ export default function Navigation() {
             {isPolice ? 'LVPD Ops' : 'SYN Ops'}
           </span>
         </div>
-        
+
         {/* Brutalist Hamburger Button */}
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="h-10 w-10 flex items-center justify-center rounded-none cursor-pointer"
-          style={{ 
+          style={{
             border: '1px solid var(--border-color)',
             backgroundColor: 'transparent',
             color: 'var(--text-primary)'
@@ -106,7 +106,7 @@ export default function Navigation() {
 
       {/* Mobile Overlay */}
       {isOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-1900 md:hidden"
           style={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }}
           onClick={() => setIsOpen(false)}
@@ -115,9 +115,8 @@ export default function Navigation() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed inset-y-0 left-0 h-screen w-64 flex flex-col z-2000 transform transition-transform duration-200 ease-in-out md:translate-x-0 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed inset-y-0 left-0 h-screen w-64 flex flex-col z-2000 transform transition-transform duration-200 ease-in-out md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
         style={{
           backgroundColor: 'var(--bg-surface)',
           backdropFilter: 'blur(24px)',

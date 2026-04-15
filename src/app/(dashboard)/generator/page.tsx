@@ -19,7 +19,7 @@ export default function GeneratorPage() {
   const { updateProfileStatus, addWarrant } = useData();
   const isPolice = theme === 'police';
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!targetId || isSubmitting) return;
 
@@ -81,7 +81,7 @@ export default function GeneratorPage() {
         });
 
         const imgData = canvas.toDataURL('image/png');
-        
+
         // A4 format: 210mm x 297mm
         const pdf = new jsPDF({
           orientation: 'portrait',
@@ -91,7 +91,7 @@ export default function GeneratorPage() {
 
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
-        
+
         // Add 10mm margin for clean look
         const margin = 10;
         const maxWidth = pageWidth - (margin * 2);
@@ -111,7 +111,7 @@ export default function GeneratorPage() {
         const yOffset = (pageHeight - finalHeight) / 2;
 
         pdf.addImage(imgData, 'PNG', xOffset, yOffset, finalWidth, finalHeight);
-        
+
         // Download document
         const filename = isPolice ? `LVPD_Warrant_${targetId}.pdf` : `SYN_Burn_Order_${targetId}.pdf`;
         pdf.save(filename);
@@ -135,19 +135,19 @@ export default function GeneratorPage() {
 
         {/* Header */}
         <div>
-           <h1 className="text-xl font-mono tracking-[0.3em] uppercase mb-2" style={{ color: 'var(--text-primary)' }}>
-             {isPolice ? 'Tactical Generator' : 'Burn Protocol'}
-           </h1>
-           <p className="text-xs font-mono tracking-widest uppercase opacity-70" style={{ color: 'var(--text-muted)' }}>
-             {isPolice ? 'Draft an active arrest warrant.' : 'Initialize target destruction context.'}
-           </p>
+          <h1 className="text-xl font-mono tracking-[0.3em] uppercase mb-2" style={{ color: 'var(--text-primary)' }}>
+            {isPolice ? 'Tactical Generator' : 'Burn Protocol'}
+          </h1>
+          <p className="text-xs font-mono tracking-widest uppercase opacity-70" style={{ color: 'var(--text-muted)' }}>
+            {isPolice ? 'Draft an active arrest warrant.' : 'Initialize target destruction context.'}
+          </p>
         </div>
 
         {/* Split Screen Container */}
         <div className="flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-16 items-start mt-8">
           {/* Left Column: Form */}
           <div className="flex flex-col h-full w-full">
-            <DocumentForm 
+            <DocumentForm
               targetId={targetId}
               setTargetId={setTargetId}
               urgency={urgency}
@@ -161,10 +161,10 @@ export default function GeneratorPage() {
 
           {/* Right Column: Live Document Preview */}
           <div className="flex flex-col w-full items-center lg:justify-center pt-2 lg:pt-0 lg:sticky lg:top-24 relative z-0">
-            <LivePreview 
-               targetId={targetId}
-               urgency={urgency}
-               justification={justification}
+            <LivePreview
+              targetId={targetId}
+              urgency={urgency}
+              justification={justification}
             />
           </div>
         </div>

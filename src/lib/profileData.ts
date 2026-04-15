@@ -65,7 +65,7 @@ export const MOCK_PROFILES: ProfileData[] = [
     mafiaThreat: 'MEDIUM',
     policeNotes: 'Held in maximum tech sector pending trial.',
     mafiaNotes: 'We need to arrange extraction before the arraignment.',
-  }, 
+  },
   {
     id: 'PR-106',
     policeName: 'Lydia "Stix" Martinez',

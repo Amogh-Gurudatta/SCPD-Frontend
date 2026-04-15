@@ -11,7 +11,7 @@ interface DocumentFormProps {
   justification: string;
   setJustification: (val: string) => void;
   isSubmitting: boolean;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.SubmitEvent<HTMLFormElement>) => void;
 }
 
 export default function DocumentForm({
@@ -70,7 +70,7 @@ export default function DocumentForm({
             {urgency} / 100
           </span>
         </div>
-        
+
         {/* Brutalist Custom Slider Approach using styled range input */}
         <input
           type="range"
@@ -151,25 +151,25 @@ export default function DocumentForm({
         }}
       >
         <div className="absolute inset-0 flex items-center justify-center z-10 transition-colors duration-200 group-hover:text-black">
-          <span 
+          <span
             className="text-xs font-mono font-bold uppercase tracking-[0.3em]"
-            style={{ 
-              color: isSubmitting || !targetId 
-                ? 'var(--text-muted)' 
-                : 'var(--accent-primary)' 
+            style={{
+              color: isSubmitting || !targetId
+                ? 'var(--text-muted)'
+                : 'var(--accent-primary)'
             }}
           >
-            {isSubmitting 
-              ? 'TRANSMITTING...' 
+            {isSubmitting
+              ? 'TRANSMITTING...'
               : (isPolice ? 'Issue Warrant' : 'Execute Order')}
           </span>
         </div>
 
         {/* The Transmitting Progress Juice */}
         {isSubmitting && (
-          <div 
+          <div
             className="absolute top-0 left-0 h-full transition-all duration-2000 ease-linear"
-            style={{ 
+            style={{
               backgroundColor: 'color-mix(in srgb, var(--accent-primary) 40%, transparent)',
               width: '100%',
               animation: 'fillProgress 2s linear forwards'

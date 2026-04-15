@@ -14,7 +14,7 @@ The frontend for SCPD is a **Janus dashboard** — one application, two complete
 ## The Concept
 
 | Identity | Theme | Color | Narrative |
-|---|---|---|---|
+| - | - | - | - |
 | **LVPD Tactical Terminal** | `police` | Deep Cerulean `#0891b2` | Law enforcement surveillance ops |
 | **Syndicate Node Access** | `mafia` | Rust Red `#9b2226` | Underground criminal network |
 
@@ -38,7 +38,7 @@ Every label, badge, icon, data field, and navigation item reflects the active fa
 
 ## Project Structure
 
-```
+```plaintext
 src/
 ├── app/
 │   ├── (auth)/
@@ -117,9 +117,11 @@ npm run lint     # ESLint
 ## Features
 
 ### Dual-Theme System
+
 The entire UI — colors, labels, icons, navigation, data fields, cursor — switches between two identities. Theme persists across sessions via `localStorage`. The toggle is hidden from standard users and only appears after Syndicate session activation.
 
 ### Tactical Map (`/map`)
+
 - Leaflet map centered on Las Vegas (`36.1716° N, 115.1391° W`) with CartoDB dark tiles.
 - Incident pins pulled live from the backend, color-coded by theme accent.
 - Clicking a pin or incident feed item smoothly `flyTo()`s the map to that location.
@@ -127,22 +129,27 @@ The entire UI — colors, labels, icons, navigation, data fields, cursor — swi
 - SSR disabled via `next/dynamic` to avoid Leaflet crashing on the server.
 
 ### Database (`/database`)
+
 - Responsive grid of profile cards with search, status filter, and threat level filter.
 - Cards animate out with a vertical "shred" strip effect on delete.
 - Add Record modal creates new entries directly in the PostgreSQL database via the API.
 
 ### Warrant / Burn Order Generator (`/generator`)
+
 - Live A4 document preview updates as you type — name, urgency bar, justification, status.
 - A rubber stamp overlay (`APPROVED: ALPHA` / `CRITICAL HIT`) appears when urgency > 80.
 - On submit: target status is updated globally, warrant is logged to the database, a PDF is exported client-side, and a Web Audio API beep plays as feedback.
 
 ### Warrant Log (`/warrants`)
+
 - Searchable, sortable, filterable table of all warrants.
 - Police users see only `WARRANT` type entries; Mafia users see all.
 - Animated row transitions on filter changes.
 
 ### Secret Syndicate Activation
+
 On the login page in Police mode:
+
 1. Type `OVERRIDE_SYNDICATE` into the username field (field clears automatically).
 2. Click the logo icon 3 times rapidly.
 
@@ -155,17 +162,20 @@ This triggers the Mafia session, calls the backend `/breach/` endpoint, and perm
 ### State Management
 
 | Context | Responsibility |
-|---|---|
+| - | - |
 | `ThemeContext` | Active theme (`police`/`mafia`), toggle, glitch animation, `mafiaSession` flag |
 | `DataContext` | API polling (5s interval), profiles, warrantLog, incidents, CRUD operations, token refresh |
 
 ### API Integration
+
 `DataContext` wraps all fetch calls in an `apiFetch` helper that:
+
 - Attaches the JWT Bearer token from `localStorage`.
 - On a 401 response, attempts a token refresh automatically.
 - On refresh failure, clears tokens and redirects to login.
 
 ### Token Handling
+
 Tokens are stored in `localStorage` (accessible to JS — fine for a demo, not for production). The `AuthGuard` component checks for token presence and shows a loading screen until verified.
 
 ---
@@ -189,4 +199,4 @@ MIT — see [LICENSE](LICENSE) for details.
 
 ---
 
-*Built with ⚡ for HackNite 2026 · SinCity Theme · by The Shadows (Amogh Gurudatta and Aatraya Mukherjee)*
+Built with ⚡ for **HackNite 2026** · SinCity Theme · by **The Shadows** (Amogh Gurudatta and Aatraya Mukherjee)

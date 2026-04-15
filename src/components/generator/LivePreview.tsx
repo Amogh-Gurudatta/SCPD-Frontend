@@ -49,9 +49,9 @@ export default function LivePreview({
         }}
       >
         {/* Dynamic Watermark / Background Styling */}
-        <div 
+        <div
           className="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-center font-bold tracking-tighter mix-blend-overlay"
-          style={{ 
+          style={{
             color: 'var(--text-primary)',
             fontSize: '12em'
           }}
@@ -175,7 +175,7 @@ export default function LivePreview({
           {/* Footer Warning */}
           <div
             className="pt-[2%] pb-[4%] text-center font-mono tracking-widest uppercase mt-auto"
-            style={{ 
+            style={{
               borderTop: '1px solid var(--border-color)',
               color: 'var(--text-muted)',
               fontSize: '0.65em'
@@ -185,7 +185,7 @@ export default function LivePreview({
               ? 'Authorized personnel only. Misuse of this terminal is a Class A felony.'
               : 'End-to-end encrypted. Destroy context after execution.'}
           </div>
-          
+
         </div>
 
         {/* Dynamic Rubber Stamp Overlay - SVG Implementation for html2canvas stability */}
@@ -198,19 +198,19 @@ export default function LivePreview({
               width: '75%', // Covers ~3/4 of the document width
             }}
           >
-            <svg 
-              width="100%" 
-              height="auto" 
+            <svg
+              width="100%"
+              height="auto"
               viewBox="0 0 400 120"
               className="drop-shadow-2xl"
             >
-              <rect 
-                x="5" 
-                y="5" 
-                width="390" 
-                height="110" 
-                fill="none" 
-                stroke={isPolice ? 'var(--accent-primary)' : '#991b1b'} 
+              <rect
+                x="5"
+                y="5"
+                width="390"
+                height="110"
+                fill="none"
+                stroke={isPolice ? 'var(--accent-primary)' : '#991b1b'}
                 strokeWidth="10"
               />
               <text

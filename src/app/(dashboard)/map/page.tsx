@@ -34,14 +34,14 @@ export default function MapPage() {
     <div className="relative w-full h-[calc(100dvh-4rem)] md:h-screen overflow-hidden">
       {/* Absolute floating UI */}
       <IncidentFeed onSelectNode={handleSelectNode} activeId={activeNode?.id} />
-      
+
       {/* Underlying Map */}
-      <MapWidget 
-        activeNode={activeNode} 
-        onSelectNode={handleSelectNode} 
-        accentColor={accentColor} 
+      <MapWidget
+        activeNode={activeNode}
+        onSelectNode={handleSelectNode}
+        accentColor={accentColor}
       />
-      
+
       {/* Decorative reticle overlay */}
       <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center opacity-30">
         <div style={{ border: `1px solid ${accentColor}`, width: '40vh', height: '40vh', borderRadius: '50%' }} />

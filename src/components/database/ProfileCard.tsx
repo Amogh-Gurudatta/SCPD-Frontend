@@ -44,19 +44,19 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
   const shredVariants: Variants = {
     initial: { opacity: 1 },
     exit: {
-      transition: { 
+      transition: {
         staggerChildren: 0.02,
-        duration: 0.6 
+        duration: 0.6
       }
     }
   };
 
   const contentVariants: Variants = {
     initial: { opacity: 1 },
-    exit: { 
-      opacity: 0, 
+    exit: {
+      opacity: 0,
       filter: 'blur(8px)',
-      transition: { duration: 0.2 } 
+      transition: { duration: 0.2 }
     }
   };
 
@@ -65,8 +65,8 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
     exit: (i: number) => ({
       opacity: 1,
       y: i % 2 === 0 ? 150 : -150,
-      transition: { 
-        duration: 0.4, 
+      transition: {
+        duration: 0.4,
         ease: "circIn"
       }
     })

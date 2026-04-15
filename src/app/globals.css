@@ -11,26 +11,33 @@
 }
 
 @layer base {
+
   :root,
   .police {
     /* LVPD (Police Mode) - High-tech, structured military/surveillance UI */
-    --bg-base: #030a14; /* Deep tactical navy */
-    --bg-surface: rgba(12, 22, 40, 0.75); /* Frosted deep blue */
+    --bg-base: #030a14;
+    /* Deep tactical navy */
+    --bg-surface: rgba(12, 22, 40, 0.75);
+    /* Frosted deep blue */
     --text-primary: #e2e8f0;
-    --text-muted: #64748b; 
-    --border-color: #1e293b; 
-    --accent-primary: #0891b2; /* Deep Cerulean/Cyan - clinical and severe */
-    --accent-secondary: #f59e0b; 
+    --text-muted: #64748b;
+    --border-color: #1e293b;
+    --accent-primary: #0891b2;
+    /* Deep Cerulean/Cyan - clinical and severe */
+    --accent-secondary: #f59e0b;
   }
 
   .mafia {
     /* The Syndicate (Mafia Mode) - Brutalist, underground terminal */
     --bg-base: #000000;
-    --bg-surface: rgba(15, 5, 5, 0.95); /* Extremely dark blood-tinted glass */
-    --text-primary: #d4d4d4; 
-    --text-muted: #666666; 
-    --border-color: #3f1515; /* Dark rust/blood border */
-    --accent-primary: #9b2226; /* Rust / Dried Blood Red - abrasive and grounded */
+    --bg-surface: rgba(15, 5, 5, 0.95);
+    /* Extremely dark blood-tinted glass */
+    --text-primary: #d4d4d4;
+    --text-muted: #666666;
+    --border-color: #3f1515;
+    /* Dark rust/blood border */
+    --accent-primary: #9b2226;
+    /* Rust / Dried Blood Red - abrasive and grounded */
     --accent-secondary: #000000;
   }
 
@@ -45,10 +52,8 @@
 
   /* Scanline/Grid effect strictly for The Syndicate (.mafia) */
   .mafia body {
-    background-image: linear-gradient(
-        rgba(155, 34, 38, 0.08) 1px,
-        transparent 1px
-      ),
+    background-image: linear-gradient(rgba(155, 34, 38, 0.08) 1px,
+        transparent 1px),
       linear-gradient(90deg, rgba(155, 34, 38, 0.08) 1px, transparent 1px);
     background-size: 24px 24px;
     background-position: center center;

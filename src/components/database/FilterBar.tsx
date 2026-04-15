@@ -59,14 +59,13 @@ export default function FilterBar({
               onBlur={(e) => (e.target.style.borderColor = 'var(--border-color)')}
             />
           </div>
-          
+
           <button
             onClick={onAddRecord}
-            className={`flex items-center gap-2 px-4 py-2 text-[10px] font-mono font-bold uppercase tracking-widest transition-all shrink-0 border border-(--accent-primary) text-(--accent-primary) cursor-pointer ${
-              isPolice 
-                ? 'hover:bg-[#2563eb] hover:text-white hover:border-[#2563eb]' 
+            className={`flex items-center gap-2 px-4 py-2 text-[10px] font-mono font-bold uppercase tracking-widest transition-all shrink-0 border border-(--accent-primary) text-(--accent-primary) cursor-pointer ${isPolice
+                ? 'hover:bg-[#2563eb] hover:text-white hover:border-[#2563eb]'
                 : 'hover:bg-[#dc2626] hover:text-white hover:border-[#dc2626]'
-            }`}
+              }`}
           >
             {isPolice ? <UserPlus size={14} /> : <Plus size={14} />}
             <span className="hidden sm:inline">{isPolice ? 'Add Record' : 'Inject Node'}</span>

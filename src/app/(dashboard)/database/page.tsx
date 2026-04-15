@@ -25,7 +25,7 @@ export default function DatabasePage() {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [threatFilter, setThreatFilter] = useState('ALL');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
+
   const { theme } = useTheme();
   const { profiles } = useData();
   const isPolice = theme === 'police';
@@ -60,9 +60,9 @@ export default function DatabasePage() {
 
   return (
     <div className="min-h-screen relative overflow-y-auto" style={{ backgroundColor: 'var(--bg-base)' }}>
-      <FilterBar 
-        query={query} 
-        setQuery={setQuery} 
+      <FilterBar
+        query={query}
+        setQuery={setQuery}
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
         threatFilter={threatFilter}
@@ -71,9 +71,9 @@ export default function DatabasePage() {
       />
 
       <AddRecordModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-      
+
       <div className="max-w-7xl mx-auto px-4 pb-12">
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
           variants={containerVariants}
           initial="hidden"
@@ -96,7 +96,7 @@ export default function DatabasePage() {
 
         <AnimatePresence>
           {filteredProfiles.length === 0 && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 0.5 }}
               exit={{ opacity: 0 }}
