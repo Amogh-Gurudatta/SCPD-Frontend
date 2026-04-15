@@ -232,7 +232,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       });
       if (res.ok || res.status === 201) {
         const savedData = await res.json();
-        setProfiles((prev) => [mapSuspectToFrontend(savedData), ...prev]);
+        setProfiles((prev: ProfileData[]) => [mapSuspectToFrontend(savedData), ...prev]);
       }
     } catch (e) {
       console.error('addProfile failed', e);
@@ -250,7 +250,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      setProfiles((prev) => prev.filter((p) => String(p.id) !== String(id)));
+      setProfiles((prev: ProfileData[]) => prev.filter((p: ProfileData) => String(p.id) !== String(id)));
     } catch (e) {
       console.error('deleteProfile failed', e);
     }
@@ -264,8 +264,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
         body: JSON.stringify(payload),
       });
       if (res.ok) {
-        setProfiles((prev) =>
-          prev.map((p) =>
+        setProfiles((prev: ProfileData[]) =>
+          prev.map((p: ProfileData) =>
             p.id === id
               ? { ...p, policeStatus, mafiaStatus }
               : p
@@ -291,13 +291,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
         // Only insert into UI immediately if it belongs in this theme
         if ((theme === 'police' && mapped.type === 'WARRANT') ||
           (theme === 'mafia' && mapped.type === 'BURN')) {
-          setWarrantLog((prev) => [mapped, ...prev]);
+          setWarrantLog((prev: WarrantEntry[]) => [mapped, ...prev]);
         }
 
         // TACTICAL CONSEQUENCES (BURN cascade is now enforced server-side)
         if (mapped.type === 'WARRANT') {
           // BUG-3 FIX: Read from ref to avoid stale closure
-          const target = profilesRef.current.find(p => p.id === mapped.targetId);
+          const target = profilesRef.current.find((p: ProfileData) => p.id === mapped.targetId);
           if (target) {
             await updateProfileStatus(mapped.targetId, 'CUSTODY', target.mafiaStatus);
           }
