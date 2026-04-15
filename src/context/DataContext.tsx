@@ -57,15 +57,15 @@ function mapSuspectToFrontend(data: any): ProfileData {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapSuspectToBackend(data: Partial<ProfileData>): any {
   return {
-    ...(data.id && { id: data.id }),
-    ...(data.policeName && { police_name: data.policeName }),
-    ...(data.mafiaName && { mafia_name: data.mafiaName }),
-    ...(data.policeStatus && { police_status: data.policeStatus }),
-    ...(data.mafiaStatus && { mafia_status: data.mafiaStatus }),
-    ...(data.policeThreat && { police_threat: data.policeThreat }),
-    ...(data.mafiaThreat && { mafia_threat: data.mafiaThreat }),
-    ...(data.policeNotes && { police_notes: data.policeNotes }),
-    ...(data.mafiaNotes && { mafia_notes: data.mafiaNotes }),
+    ...(data.id !== undefined && { id: data.id }),
+    ...(data.policeName !== undefined && { police_name: data.policeName }),
+    ...(data.mafiaName !== undefined && { mafia_name: data.mafiaName }),
+    ...(data.policeStatus !== undefined && { police_status: data.policeStatus }),
+    ...(data.mafiaStatus !== undefined && { mafia_status: data.mafiaStatus }),
+    ...(data.policeThreat !== undefined && { police_threat: data.policeThreat }),
+    ...(data.mafiaThreat !== undefined && { mafia_threat: data.mafiaThreat }),
+    ...(data.policeNotes !== undefined && { police_notes: data.policeNotes }),
+    ...(data.mafiaNotes !== undefined && { mafia_notes: data.mafiaNotes }),
   };
 }
 
@@ -76,7 +76,7 @@ function mapWarrantToFrontend(data: any): WarrantEntry {
     id: String(data.id),
     targetId: data.target_id ? String(data.target_id) : '',
     timestamp: data.timestamp || new Date().toISOString(),
-    urgency: data.urgency || 0,
+    urgency: data.urgency ?? 0,
     justification: data.justification || '',
     type: data.type_warrant || data.type || 'WARRANT',
   };
@@ -90,8 +90,25 @@ function mapWarrantToBackend(data: Partial<WarrantEntry>): any {
     ...(data.targetId && { target_id: data.targetId }),
     ...(data.timestamp && { timestamp: data.timestamp }),
     ...(typeof data.urgency !== 'undefined' && { urgency: data.urgency }),
-    ...(data.justification && { justification: data.justification }),
+    ...(data.justification !== undefined && { justification: data.justification }),
     ...(data.type && { type_warrant: data.type }),
+  };
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapIncidentToFrontend(data: any): IncidentData {
+  return {
+    id: String(data.id),
+    latitude: typeof data.latitude === 'string' ? parseFloat(data.latitude) : Number(data.latitude),
+    longitude: typeof data.longitude === 'string' ? parseFloat(data.longitude) : Number(data.longitude),
+    severity: data.severity ?? 0,
+    incident_type: data.incident_type || 'unknown',
+    title: data.title || '',
+    description: data.description || '',
+    timestamp: data.Time || data.timestamp || new Date().toISOString(),
+    location: data.Location || '',
+    clandestine: data.clandestine ?? false,
+    ai_generated: data.ai_generated ?? false,
   };
 }
 
@@ -189,7 +206,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
       if (incidentsRes?.ok) {
         const data = await incidentsRes.json();
-        setIncidents(Array.isArray(data) ? data : []);
+        setIncidents(Array.isArray(data) ? data.map(mapIncidentToFrontend) : []);
       }
     } catch (error) {
       console.error('Data refresh cycle failed:', error);
@@ -277,10 +294,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
           setWarrantLog((prev) => [mapped, ...prev]);
         }
 
-        // TACTICAL CONSEQUENCES
-        if (mapped.type === 'BURN') {
-          await deleteProfile(mapped.targetId);
-        } else if (mapped.type === 'WARRANT') {
+        // TACTICAL CONSEQUENCES (BURN cascade is now enforced server-side)
+        if (mapped.type === 'WARRANT') {
           // BUG-3 FIX: Read from ref to avoid stale closure
           const target = profilesRef.current.find(p => p.id === mapped.targetId);
           if (target) {
