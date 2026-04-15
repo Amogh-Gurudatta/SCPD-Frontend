@@ -4,10 +4,13 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Live](https://img.shields.io/badge/Live-scpd.live-brightgreen?style=for-the-badge)](https://scpd.live)
 
 > *A high-performance, neon-noir dual-theme spatial surveillance dashboard. The LVPD's tactical terminal — now compromised by the Syndicate.*
 
 The frontend for SCPD is a **Janus dashboard** — one application, two complete identities. Log in as a police officer and you get a clinical blue tactical terminal. Activate the Syndicate override and the entire UI glitches, transforms, and re-skins into a rust-red underground operations center.
+
+🌐 **Live at [https://scpd.live](https://scpd.live)**
 
 ---
 
@@ -66,7 +69,7 @@ src/
 │       └── LivePreview.tsx        # Real-time A4 document preview
 ├── context/
 │   ├── ThemeContext.tsx           # police/mafia theme + glitch animation
-│   └── DataContext.tsx            # API polling, CRUD, token refresh
+│   └── DataContext.tsx            # API polling, CRUD, token refresh, data mappers
 └── lib/
     ├── mockData.ts                # MapNode type + fallback node data
     └── profileData.ts             # ProfileData type + mock profiles
@@ -95,12 +98,14 @@ Create a `.env.local` file in the project root:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000/api/v1
+NEXT_PUBLIC_BREACH_CODE=<your_breach_code>
 ```
 
-For production (Vercel), set this to your Render backend URL:
+For production, set these to your live backend URL:
 
 ```env
 NEXT_PUBLIC_API_URL=https://scpd-backend.onrender.com/api/v1
+NEXT_PUBLIC_BREACH_CODE=<your_breach_code>
 ```
 
 ### Run
@@ -139,11 +144,12 @@ The entire UI — colors, labels, icons, navigation, data fields, cursor — swi
 - Live A4 document preview updates as you type — name, urgency bar, justification, status.
 - A rubber stamp overlay (`APPROVED: ALPHA` / `CRITICAL HIT`) appears when urgency > 80.
 - On submit: target status is updated globally, warrant is logged to the database, a PDF is exported client-side, and a Web Audio API beep plays as feedback.
+- BURN orders are role-gated: only Mafia-authenticated users can issue them. The target Criminal profile is deleted **server-side** automatically upon successful BURN order creation.
 
 ### Warrant Log (`/warrants`)
 
 - Searchable, sortable, filterable table of all warrants.
-- Police users see only `WARRANT` type entries; Mafia users see all.
+- Police users see only `WARRANT` type entries; Mafia users see `BURN` orders.
 - Animated row transitions on filter changes.
 
 ### Secret Syndicate Activation
@@ -164,7 +170,19 @@ This triggers the Mafia session, calls the backend `/breach/` endpoint, and perm
 | Context | Responsibility |
 | - | - |
 | `ThemeContext` | Active theme (`police`/`mafia`), toggle, glitch animation, `mafiaSession` flag |
-| `DataContext` | API polling (5s interval), profiles, warrantLog, incidents, CRUD operations, token refresh |
+| `DataContext` | API polling (5s interval, auto-stops on logout), profiles, warrantLog, incidents, CRUD operations, token refresh, data normalization |
+
+### Data Normalization (`DataContext`)
+
+All API responses are routed through typed mapper functions before entering React state:
+
+| Mapper | Purpose |
+| - | - |
+| `mapSuspectToFrontend` | snake_case → camelCase; defaults mafia fields gracefully for Police users |
+| `mapSuspectToBackend` | camelCase → snake_case; uses `!== undefined` to preserve empty strings on PATCH |
+| `mapWarrantToFrontend` | Maps `type_warrant` → `type`; uses `??` for urgency to correctly handle zero |
+| `mapWarrantToBackend` | Maps `type` → `type_warrant`; preserves empty justification strings |
+| `mapIncidentToFrontend` | Coerces `id` to string; parses `latitude`/`longitude` from Decimal strings to `number`; maps `Time` → `timestamp` |
 
 ### API Integration
 
@@ -174,22 +192,29 @@ This triggers the Mafia session, calls the backend `/breach/` endpoint, and perm
 - On a 401 response, attempts a token refresh automatically.
 - On refresh failure, clears tokens and redirects to login.
 
+The polling loop checks for token presence on **every tick** — if the token is cleared (logout or expiry), the interval automatically cancels itself, preventing background requests after session end.
+
 ### Token Handling
 
 Tokens are stored in `localStorage` (accessible to JS — fine for a demo, not for production). The `AuthGuard` component checks for token presence and shows a loading screen until verified.
 
 ---
 
-## Deployment (Vercel)
+## Deployment
 
-This project is pre-configured for Vercel deployment.
+This project is deployed to **[https://scpd.live](https://scpd.live)** via Vercel.
 
 1. Push to GitHub.
 2. Import the repo on [vercel.com](https://vercel.com).
-3. Set the `NEXT_PUBLIC_API_URL` environment variable to your backend URL.
+3. Set the `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_BREACH_CODE` environment variables.
 4. Deploy.
 
-The backend CORS configuration already allows `https://scpd.vercel.app` and matches any `scpd*.vercel.app` preview URL via regex.
+The backend CORS configuration allows:
+
+- `https://scpd.live`
+- `https://www.scpd.live`
+- `https://scpd.vercel.app`
+- Any `scpd*.vercel.app` preview URL via regex
 
 ---
 
