@@ -19,6 +19,7 @@ export default function CustomCursor() {
   const cursorY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     const moveMouse = (e: MouseEvent) => {
       mouseX.set(e.clientX - 10);

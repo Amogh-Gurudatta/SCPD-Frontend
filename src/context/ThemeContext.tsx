@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type Theme = 'police' | 'mafia';
@@ -63,6 +63,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const toggleTheme = useCallback(() => {
     setTheme(theme === 'police' ? 'mafia' : 'police');
   }, [theme, setTheme]);
+
+  // Pre-compute random strip positions once per glitch so Math.random()
+  // is never called directly during render (satisfies react-hooks/purity).
+  const glitchStrips = useMemo(
+    () =>
+      Array.from({ length: 5 }, () => ({
+        height: Math.random() * 50,
+        top: Math.random() * 100,
+      })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [glitching] // recompute each time a new glitch starts
+  );
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme, setTheme, mafiaSession, setMafiaSession }}>
@@ -129,11 +141,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* 5. Horizontal Glitch Strips */}
-            {[...Array(5)].map((_, i) => (
+            {glitchStrips.map((strip, i) => (
               <motion.div
                 key={i}
                 className="absolute w-full bg-white/10"
-                style={{ height: Math.random() * 50 + 'px', top: Math.random() * 100 + '%' }}
+                style={{ height: strip.height + 'px', top: strip.top + '%' }}
                 animate={{ x: [-100, 100, -50, 0] }}
                 transition={{ duration: 0.2, repeat: 2 }}
               />

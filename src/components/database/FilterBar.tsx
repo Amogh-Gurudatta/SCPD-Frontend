@@ -1,11 +1,7 @@
 'use client';
 
-import { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
-import { useData } from '@/context/DataContext';
 import { Search, Plus, UserPlus } from 'lucide-react';
-import { toast } from 'sonner';
-import AddRecordModal from './AddRecordModal';
 
 interface FilterBarProps {
   query: string;

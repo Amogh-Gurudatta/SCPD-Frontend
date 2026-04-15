@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { useData } from '@/context/DataContext';
 import { motion } from 'framer-motion';
@@ -18,12 +18,10 @@ export default function LivePreview({
 }: LivePreviewProps) {
   const { theme } = useTheme();
   const { profiles } = useData();
-  const [refNumber, setRefNumber] = useState('000000');
+  const [refNumber] = useState(() =>
+    Math.floor(Math.random() * 1000000).toString().padStart(6, '0')
+  );
   const isPolice = theme === 'police';
-
-  useEffect(() => {
-    setRefNumber(Math.floor(Math.random() * 1000000).toString().padStart(6, '0'));
-  }, []);
 
   const selectedProfile = profiles.find((p) => p.id === targetId);
 

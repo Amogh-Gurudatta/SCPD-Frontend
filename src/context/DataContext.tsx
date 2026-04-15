@@ -19,6 +19,7 @@ export interface IncidentData {
   title?: string;
   description?: string;
   timestamp?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
@@ -34,6 +35,7 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapSuspectToFrontend(data: any): ProfileData {
   return {
     id: String(data.id),
@@ -48,6 +50,7 @@ function mapSuspectToFrontend(data: any): ProfileData {
   };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapSuspectToBackend(data: Partial<ProfileData>): any {
   return {
     ...(data.id && { id: data.id }),
@@ -63,6 +66,7 @@ function mapSuspectToBackend(data: Partial<ProfileData>): any {
 }
 
 // FIXED: Properly reads type_warrant from the Django backend
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapWarrantToFrontend(data: any): WarrantEntry {
   return {
     id: String(data.id),
@@ -75,6 +79,7 @@ function mapWarrantToFrontend(data: any): WarrantEntry {
 }
 
 // FIXED: Properly formats type_warrant for the Django backend
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function mapWarrantToBackend(data: Partial<WarrantEntry>): any {
   return {
     ...(data.id && { id: data.id }),
@@ -93,7 +98,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [warrantLog, setWarrantLog] = useState<WarrantEntry[]>([]);
   const [incidents, setIncidents] = useState<IncidentData[]>([]);
 
-  const apiFetch = useCallback(async (endpoint: string, options: RequestInit = {}, isRetry = false): Promise<Response> => {
+  const apiFetch = useCallback(async function fetchApi(endpoint: string, options: RequestInit = {}, isRetry = false): Promise<Response> {
     const token = localStorage.getItem('access');
     const headers = new Headers(options.headers || {});
 
@@ -125,7 +130,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           if (refreshRes.ok) {
             const data = await refreshRes.json();
             localStorage.setItem('access', data.access);
-            return apiFetch(endpoint, options, true);
+            return fetchApi(endpoint, options, true);
           }
         } catch (error) {
           console.error('Token refresh execution failed:', error);

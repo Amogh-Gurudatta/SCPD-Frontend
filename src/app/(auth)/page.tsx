@@ -140,7 +140,7 @@ export default function GatewayPage() {
       } else {
         setErrorInfo(`ERROR: Unexpected server response (${response.status})`);
       }
-    } catch (error) {
+    } catch {
       setErrorInfo('ERROR: Network offline or backend unreachable');
     } finally {
       setIsLoading(false);

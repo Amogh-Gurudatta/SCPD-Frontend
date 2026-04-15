@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 import { useTheme } from '@/context/ThemeContext';
 import { useData } from '@/context/DataContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Filter, SortAsc, SortDesc, FileText, Flame, ArrowUpRight } from 'lucide-react';
+import { Search, SortAsc, SortDesc, ArrowUpRight } from 'lucide-react';
 
 export default function WarrantsPage() {
   const { theme } = useTheme();
@@ -16,7 +16,7 @@ export default function WarrantsPage() {
   const [sortOrder, setSortOrder] = useState<'NEWEST' | 'OLDEST'>('NEWEST');
 
   const filteredWarrants = useMemo(() => {
-    let result = [...warrantLog].filter((w) => {
+    const result = [...warrantLog].filter((w) => {
       const targetIdStr = String(w.targetId || '').toLowerCase();
       const idStr = String(w.id || '').toLowerCase();
       const searchStr = query.toLowerCase();
@@ -50,9 +50,11 @@ export default function WarrantsPage() {
         </div>
 
         {/* Tactical Filter Bar */}
-        <div className="flex flex-col md:flex-row gap-6 mb-8 p-6 border border-(--border-color) bg-(--bg-surface)">
+        <div className="flex flex-col md:flex-row gap-6 mb-8 p-6 border border-(--border-color) bg-(--bg-surface) md:items-center">
           <div className="relative flex-1">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-(--text-muted)" />
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+              <Search size={16} className="text-(--text-muted)" />
+            </div>
             <input
               type="text"
               placeholder="Search by ID or Target..."
@@ -93,19 +95,19 @@ export default function WarrantsPage() {
                   />
                 </div>
               </div>
-              
+
               <div className="relative h-6 flex items-center">
                 {/* Track Background */}
                 <div className="absolute w-full h-1 bg-black/20 border border-(--border-color)" />
                 {/* Active Range Highlight */}
-                <div 
+                <div
                   className="absolute h-1 bg-(--accent-primary)/30"
-                  style={{ 
-                    left: `${urgencyRange[0]}%`, 
-                    width: `${urgencyRange[1] - urgencyRange[0]}%` 
+                  style={{
+                    left: `${urgencyRange[0]}%`,
+                    width: `${urgencyRange[1] - urgencyRange[0]}%`
                   }}
                 />
-                
+
                 {/* Min Slider handled via z-index logic if needed, but standard stacking often works if pointer events are right */}
                 <input
                   type="range"
@@ -179,9 +181,8 @@ export default function WarrantsPage() {
                         {new Date(w.timestamp).toLocaleString()}
                       </td>
                       <td className="p-4">
-                        <span className={`text-[9px] px-2 py-0.5 border ${
-                          w.type === 'WARRANT' ? 'border-blue-500 text-blue-500' : 'border-red-500 text-red-500'
-                        }`}>
+                        <span className={`text-[9px] px-2 py-0.5 border ${w.type === 'WARRANT' ? 'border-blue-500 text-blue-500' : 'border-red-500 text-red-500'
+                          }`}>
                           {w.type}
                         </span>
                       </td>

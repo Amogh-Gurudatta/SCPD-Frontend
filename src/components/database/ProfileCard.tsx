@@ -3,7 +3,7 @@
 import { useTheme } from '@/context/ThemeContext';
 import { useData } from '@/context/DataContext';
 import { type ProfileData } from '@/lib/profileData';
-import { User, Archive, Trash2, X } from 'lucide-react';
+import { User, Trash2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, Variants } from 'framer-motion';
 
@@ -29,7 +29,7 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
         description: `Identifier ${profile.id} has been purged from active database.`,
         className: 'font-mono uppercase text-xs',
       });
-    } catch (err) {
+    } catch {
       toast.error('DELETION FAILED', {
         description: 'Insufficient permissions or connection error.',
         className: 'font-mono uppercase text-xs',

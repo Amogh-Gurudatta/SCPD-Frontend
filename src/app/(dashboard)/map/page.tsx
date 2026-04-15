@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useTheme } from '@/context/ThemeContext';
 import IncidentFeed from '@/components/map/IncidentFeed';
@@ -21,17 +21,10 @@ const MapWidget = dynamic(() => import('@/components/map/MapWidget'), {
 export default function MapPage() {
   const [activeNode, setActiveNode] = useState<MapNode | null>(null);
   const { theme } = useTheme();
-  const [accentColor, setAccentColor] = useState('#0891b2'); // Default to Police Cyan
 
-  // Because Leaflet canvas renders outside standard DOM hierarchy for SVG paths, 
-  // it struggles to read CSS variables directly. We pass the explicit hex code based on theme.
-  useEffect(() => {
-    if (theme === 'police') {
-      setAccentColor('#0891b2'); // Deep Cerulean
-    } else {
-      setAccentColor('#9b2226'); // Rust Red
-    }
-  }, [theme]);
+  // Because Leaflet canvas renders outside standard DOM hierarchy for SVG paths,
+  // it struggles to read CSS variables directly. We derive the hex directly from theme.
+  const accentColor = theme === 'police' ? '#0891b2' : '#9b2226';
 
   const handleSelectNode = (node: MapNode) => {
     setActiveNode((prev) => (prev?.id === node.id ? null : node));

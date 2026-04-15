@@ -44,7 +44,8 @@ export default function GeneratorPage() {
 
     // Audio cue "juice" using Web Audio API (so no external assets needed)
     try {
-      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioCtx = (window.AudioContext || (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext)!;
+      const audioCtx = new AudioCtx();
       if (isPolice) {
         // Mechanical click/beep
         const osc = audioCtx.createOscillator();
@@ -64,7 +65,7 @@ export default function GeneratorPage() {
         osc.start();
         osc.stop(audioCtx.currentTime + 0.2);
       }
-    } catch (e) {
+    } catch {
       // Ignore if Audio API blocked by browser without interaction
     }
 
