@@ -214,13 +214,25 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [apiFetch, theme]); // Re-run data filter when theme swaps
 
   useEffect(() => {
-    const hasToken = typeof window !== 'undefined' && localStorage.getItem('access');
+    let intervalId: NodeJS.Timeout;
 
-    if (hasToken) {
+    const tick = () => {
+      const hasToken = typeof window !== 'undefined' && localStorage.getItem('access');
+      if (hasToken) {
+        refreshData();
+      } else {
+        clearInterval(intervalId);
+      }
+    };
+
+    // Initial check
+    const initialToken = typeof window !== 'undefined' && localStorage.getItem('access');
+    if (initialToken) {
       refreshData();
-      const intervalId = setInterval(refreshData, 5000);
-      return () => clearInterval(intervalId);
+      intervalId = setInterval(tick, 5000);
     }
+
+    return () => clearInterval(intervalId);
   }, [refreshData]);
 
   const addProfile = useCallback(async (newProfile: ProfileData) => {
