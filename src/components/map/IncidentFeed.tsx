@@ -2,12 +2,11 @@
 
 import { useState } from 'react';
 import { useTheme } from '@/context/ThemeContext';
-import { useData } from '@/context/DataContext';
-import { type MapNode } from '@/lib/mockData';
+import { useData, type IncidentData } from '@/context/DataContext';
 import { Crosshair, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface IncidentFeedProps {
-  onSelectNode: (node: MapNode) => void;
+  onSelectNode: (node: IncidentData) => void;
   activeId?: string | null;
 }
 
@@ -66,7 +65,7 @@ export default function IncidentFeed({
           return (
             <button
               key={node.id}
-              onClick={() => onSelectNode(node as unknown as MapNode)}
+              onClick={() => onSelectNode(node)}
               className="w-full text-left p-3 cursor-pointer transition-all duration-200"
               style={{
                 border: isActive
@@ -90,7 +89,7 @@ export default function IncidentFeed({
                   className="text-[9px] font-mono uppercase tracking-widest px-1.5 py-0.5"
                   style={{
                     backgroundColor:
-                      node.severity >= 8 // Uses the 1-10 severity scale from Django
+                      node.severity >= 8
                         ? 'color-mix(in srgb, var(--accent-primary) 15%, transparent)'
                         : 'transparent',
                     color: node.severity >= 8 ? 'var(--accent-primary)' : 'var(--text-muted)',

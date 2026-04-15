@@ -3,11 +3,10 @@
 import { useEffect } from 'react';
 import { MapContainer, TileLayer, CircleMarker, Tooltip, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useData } from '@/context/DataContext';
-import { type MapNode } from '@/lib/mockData';
+import { useData, type IncidentData } from '@/context/DataContext';
 
 // Custom controller to handle smooth panning when activeNode changes
-function MapController({ activeNode }: { activeNode: MapNode | null }) {
+function MapController({ activeNode }: { activeNode: IncidentData | null }) {
   const map = useMap();
 
   useEffect(() => {
@@ -23,8 +22,8 @@ function MapController({ activeNode }: { activeNode: MapNode | null }) {
 }
 
 interface MapWidgetProps {
-  activeNode: MapNode | null;
-  onSelectNode: (node: MapNode) => void;
+  activeNode: IncidentData | null;
+  onSelectNode: (node: IncidentData) => void;
   accentColor: string;
 }
 
@@ -67,7 +66,7 @@ export default function MapWidget({
                 weight: isActive ? 2 : 1,
               }}
               eventHandlers={{
-                click: () => onSelectNode(node as unknown as MapNode),
+                click: () => onSelectNode(node),
               }}
             >
               <Tooltip direction="top" offset={[0, -10]} opacity={1} permanent={isActive}>

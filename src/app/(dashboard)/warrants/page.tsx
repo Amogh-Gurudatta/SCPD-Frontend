@@ -79,7 +79,7 @@ export default function WarrantsPage() {
                       const val = Math.max(0, Math.min(Number(e.target.value), urgencyRange[1] - 1));
                       setUrgencyRange([val, urgencyRange[1]]);
                     }}
-                    className="w-12 bg-black/40 border border-(--border-color) p-1 text-(--accent-primary) text-center outline-none focus:border-(--accent-primary)"
+                    className="w-12 bg-black/40 border border-(--border-color) p-1 text-(--accent-primary) text-center outline-none focus:border-(--accent-primary) [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                   <span className="text-(--text-muted)">—</span>
                   <input
@@ -91,7 +91,7 @@ export default function WarrantsPage() {
                       const val = Math.max(urgencyRange[0] + 1, Math.min(Number(e.target.value), 100));
                       setUrgencyRange([urgencyRange[0], val]);
                     }}
-                    className="w-12 bg-black/40 border border-(--border-color) p-1 text-(--accent-primary) text-center outline-none focus:border-(--accent-primary)"
+                    className="w-12 bg-black/40 border border-(--border-color) p-1 text-(--accent-primary) text-center outline-none focus:border-(--accent-primary) [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
               </div>

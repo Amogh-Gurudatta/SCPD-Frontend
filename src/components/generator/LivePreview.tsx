@@ -150,6 +150,7 @@ export default function LivePreview({
             >
               {justification || (isPolice ? '[Enter warrant justification notes here...]' : '[Enter operational rationale here...]')}
               <motion.span
+                data-html2canvas-ignore="true"
                 animate={{ opacity: [1, 0, 1] }}
                 transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
                 className="ml-1 inline-block w-2 h-4 align-middle bg-(--accent-primary)"

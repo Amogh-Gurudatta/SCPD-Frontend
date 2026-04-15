@@ -4,7 +4,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useTheme } from '@/context/ThemeContext';
 import IncidentFeed from '@/components/map/IncidentFeed';
-import type { MapNode } from '@/lib/mockData';
+import { type IncidentData } from '@/context/DataContext';
 
 // Dynamically import the map widget with ssr: false to prevent Leaflet from crashing the server
 const MapWidget = dynamic(() => import('@/components/map/MapWidget'), {
@@ -19,14 +19,14 @@ const MapWidget = dynamic(() => import('@/components/map/MapWidget'), {
 });
 
 export default function MapPage() {
-  const [activeNode, setActiveNode] = useState<MapNode | null>(null);
+  const [activeNode, setActiveNode] = useState<IncidentData | null>(null);
   const { theme } = useTheme();
 
   // Because Leaflet canvas renders outside standard DOM hierarchy for SVG paths,
   // it struggles to read CSS variables directly. We derive the hex directly from theme.
   const accentColor = theme === 'police' ? '#0891b2' : '#9b2226';
 
-  const handleSelectNode = (node: MapNode) => {
+  const handleSelectNode = (node: IncidentData) => {
     setActiveNode((prev) => (prev?.id === node.id ? null : node));
   };
 

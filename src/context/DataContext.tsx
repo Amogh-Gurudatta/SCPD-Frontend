@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef, ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { type ProfileData } from '@/lib/profileData';
 import { useTheme } from '@/context/ThemeContext';
@@ -16,6 +16,10 @@ export interface WarrantEntry {
 
 export interface IncidentData {
   id: string;
+  latitude: number;
+  longitude: number;
+  severity: number;
+  incident_type: string;
   title?: string;
   description?: string;
   timestamp?: string;
@@ -97,6 +101,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [warrantLog, setWarrantLog] = useState<WarrantEntry[]>([]);
   const [incidents, setIncidents] = useState<IncidentData[]>([]);
+
+  // BUG-3 FIX: Keep a ref to profiles so callbacks always read the latest value
+  const profilesRef = useRef(profiles);
+  useEffect(() => { profilesRef.current = profiles; }, [profiles]);
 
   const apiFetch = useCallback(async function fetchApi(endpoint: string, options: RequestInit = {}, isRetry = false): Promise<Response> {
     const token = localStorage.getItem('access');
@@ -215,15 +223,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [apiFetch]);
 
   const deleteProfile = useCallback(async (id: string) => {
-    const res = await apiFetch(`/criminals/${id}/`, {
-      method: 'DELETE',
-    });
+    try {
+      const res = await apiFetch(`/criminals/${id}/`, {
+        method: 'DELETE',
+      });
 
-    if (!res.ok && res.status !== 204) {
-      throw new Error(`Delete failed: ${res.status}`);
+      if (!res.ok && res.status !== 204) {
+        console.error(`Delete failed: ${res.status}`);
+        return;
+      }
+
+      setProfiles((prev) => prev.filter((p) => String(p.id) !== String(id)));
+    } catch (e) {
+      console.error('deleteProfile failed', e);
     }
-
-    setProfiles((prev) => prev.filter((p) => String(p.id) !== String(id)));
   }, [apiFetch]);
 
   const updateProfileStatus = useCallback(async (id: string, policeStatus: ProfileData['policeStatus'], mafiaStatus: ProfileData['mafiaStatus']) => {
@@ -268,7 +281,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (mapped.type === 'BURN') {
           await deleteProfile(mapped.targetId);
         } else if (mapped.type === 'WARRANT') {
-          const target = profiles.find(p => p.id === mapped.targetId);
+          // BUG-3 FIX: Read from ref to avoid stale closure
+          const target = profilesRef.current.find(p => p.id === mapped.targetId);
           if (target) {
             await updateProfileStatus(mapped.targetId, 'CUSTODY', target.mafiaStatus);
           }
@@ -277,7 +291,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     } catch (e) {
       console.error('addWarrant failed', e);
     }
-  }, [apiFetch, theme, deleteProfile, updateProfileStatus, profiles]);
+  }, [apiFetch, theme, deleteProfile, updateProfileStatus]);
 
   return (
     <DataContext.Provider

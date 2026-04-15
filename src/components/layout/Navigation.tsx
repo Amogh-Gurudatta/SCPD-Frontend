@@ -250,7 +250,11 @@ export default function Navigation() {
           <button
             id="disconnect-btn"
             type="button"
-            onClick={() => router.push('/')}
+            onClick={() => {
+              localStorage.removeItem('access');
+              localStorage.removeItem('refresh');
+              router.push('/');
+            }}
             className="w-full flex items-center justify-center gap-2 py-3 md:py-2 text-[10px] font-mono uppercase tracking-[0.2em] cursor-pointer transition-opacity duration-150 hover:opacity-70"
             style={{
               border: '1px solid var(--border-color)',

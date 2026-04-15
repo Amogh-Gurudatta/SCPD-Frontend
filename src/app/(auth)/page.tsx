@@ -105,7 +105,7 @@ export default function GatewayPage() {
         // 1. Check for Authentication Loophole (Role-pinning)
         const storedRole = localStorage.getItem('role_' + fieldOne);
         if (isPolice && storedRole === 'mafia') {
-          setErrorInfo('ACCESS DENIED: Compromised Badge. Syndicate signature detected.');
+          setErrorInfo('ACCESS DENIED: Invalid credentials');
           setIsLoading(false); // Manually handle loading state since we return early
           return;
         }
@@ -119,7 +119,7 @@ export default function GatewayPage() {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${data.access}`,
               },
-              body: JSON.stringify({ code: 'CORLEONE_2026' }),
+              body: JSON.stringify({ code: process.env.NEXT_PUBLIC_BREACH_CODE || '' }),
             });
             // Mark as mafia role globally for this username
             localStorage.setItem('role_' + fieldOne, 'mafia');

@@ -26,21 +26,28 @@ export default function GeneratorPage() {
     // Trigger the Juiced Progress State
     setIsSubmitting(true);
 
-    // Global State Update
-    updateProfileStatus(targetId, isPolice ? 'WANTED' : 'ACTIVE', isPolice ? 'ONLINE' : 'BURNED');
-    addWarrant({
-      id: `W-${Math.floor(Math.random() * 10000)}`,
-      targetId,
-      timestamp: new Date().toISOString(),
-      urgency,
-      justification,
-      type: isPolice ? 'WARRANT' : 'BURN',
-    });
+    // Global State Update — await both so errors are caught and toast only fires on success
+    try {
+      await updateProfileStatus(targetId, isPolice ? 'WANTED' : 'ACTIVE', isPolice ? 'ONLINE' : 'BURNED');
+      await addWarrant({
+        id: `W-${Math.floor(Math.random() * 10000)}`,
+        targetId,
+        timestamp: new Date().toISOString(),
+        urgency,
+        justification,
+        type: isPolice ? 'WARRANT' : 'BURN',
+      });
 
-    toast.success(isPolice ? 'TRANSMISSION SUCCESSFUL' : 'BURN ORDER PROTOCOL ACTIVE', {
-      description: `Target ID ${targetId} has been flagged globally.`,
-      className: 'font-mono uppercase text-xs',
-    });
+      toast.success(isPolice ? 'TRANSMISSION SUCCESSFUL' : 'BURN ORDER PROTOCOL ACTIVE', {
+        description: `Target ID ${targetId} has been flagged globally.`,
+        className: 'font-mono uppercase text-xs',
+      });
+    } catch {
+      toast.error('OPERATION FAILED', {
+        description: 'Backend rejected the request. Check connection or permissions.',
+        className: 'font-mono uppercase text-xs',
+      });
+    }
 
     // Audio cue "juice" using Web Audio API (so no external assets needed)
     try {

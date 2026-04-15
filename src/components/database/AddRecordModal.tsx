@@ -138,7 +138,7 @@ export default function AddRecordModal({ isOpen, onClose }: AddRecordModalProps)
                     </div>
 
                     <div>
-                      <label className="block text-[10px) font-mono uppercase text-(--text-muted) mb-2">Syndicate Alias</label>
+                      <label className="block text-[10px] font-mono uppercase text-(--text-muted) mb-2">Syndicate Alias</label>
                       <input
                         required
                         value={formData.mafiaName}

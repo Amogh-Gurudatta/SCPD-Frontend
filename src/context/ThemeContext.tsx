@@ -108,14 +108,14 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
               }}
             />
 
-            {/* 3. Static / Noise layer */}
+            {/* 3. Static / Noise layer (CSS-only, no external dependency) */}
             <motion.div
               className="absolute inset-0 opacity-20"
               animate={{ opacity: [0.1, 0.3, 0.1, 0.4, 0.2] }}
               transition={{ repeat: Infinity, duration: 0.05 }}
               style={{
-                backgroundImage: 'url("https://media.giphy.com/media/oEI9uWUicf160/giphy.gif")',
-                backgroundSize: 'cover'
+                backgroundImage: `repeating-conic-gradient(rgba(255,255,255,0.06) 0% 25%, transparent 0% 50%)`,
+                backgroundSize: '4px 4px',
               }}
             />
 
