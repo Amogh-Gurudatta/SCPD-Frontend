@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useCallback, useRef, ReactNode, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { type ProfileData } from '@/lib/profileData';
 import { useTheme } from '@/context/ThemeContext';
 
@@ -114,6 +114,7 @@ function mapIncidentToFrontend(data: any): IncidentData {
 
 export function DataProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { theme } = useTheme(); // Pull in the current UI theme
   const [profiles, setProfiles] = useState<ProfileData[]>([]);
   const [warrantLog, setWarrantLog] = useState<WarrantEntry[]>([]);
@@ -233,7 +234,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
 
     return () => clearInterval(intervalId);
-  }, [refreshData]);
+  }, [refreshData, pathname]);
 
   const addProfile = useCallback(async (newProfile: ProfileData) => {
     try {
