@@ -6,6 +6,7 @@ import { type ProfileData } from '@/lib/profileData';
 import { User, Trash2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, Variants } from 'framer-motion';
+import { useState } from 'react';
 
 interface ProfileCardProps {
   profile: ProfileData;
@@ -14,6 +15,7 @@ interface ProfileCardProps {
 export default function ProfileCard({ profile }: ProfileCardProps) {
   const { theme } = useTheme();
   const { deleteProfile } = useData();
+  const [isDeleting, setIsDeleting] = useState(false);
   const isPolice = theme === 'police';
 
   const name = isPolice ? profile.policeName : profile.mafiaName;
@@ -23,6 +25,7 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
 
   const handleDelete = async (e: React.MouseEvent) => {
     e.stopPropagation();
+    setIsDeleting(true);
     try {
       await deleteProfile(profile.id);
       toast.error(isPolice ? 'RECORD DELETED' : 'NODE TERMINATED', {
@@ -43,33 +46,33 @@ export default function ProfileCard({ profile }: ProfileCardProps) {
 
   const shredVariants: Variants = {
     initial: { opacity: 1 },
-    exit: {
+    exit: isDeleting ? {
       transition: {
         staggerChildren: 0.02,
         duration: 0.6
       }
-    }
+    } : { opacity: 0, transition: { duration: 0.2 } }
   };
 
   const contentVariants: Variants = {
     initial: { opacity: 1 },
-    exit: {
+    exit: isDeleting ? {
       opacity: 0,
       filter: 'blur(8px)',
       transition: { duration: 0.2 }
-    }
+    } : { opacity: 0, transition: { duration: 0.2 } }
   };
 
   const stripVariants: Variants = {
     initial: { opacity: 0, y: 0 },
-    exit: (i: number) => ({
+    exit: (i: number) => isDeleting ? {
       opacity: 1,
       y: i % 2 === 0 ? 150 : -150,
       transition: {
         duration: 0.4,
         ease: "circIn"
       }
-    })
+    } : { opacity: 0 }
   };
 
   return (
