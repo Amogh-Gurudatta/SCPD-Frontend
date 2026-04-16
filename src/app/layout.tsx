@@ -4,6 +4,7 @@ import './globals.css';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { DataProvider } from '@/context/DataContext';
 import { Toaster } from 'sonner';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -26,6 +27,7 @@ export default function RootLayout({
             <Toaster position="top-right" theme="dark" />
           </DataProvider>
         </ThemeProvider>
+        <SpeedInsights />
       </body>
     </html>
   );
